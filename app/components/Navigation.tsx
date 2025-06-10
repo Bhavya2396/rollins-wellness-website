@@ -45,6 +45,13 @@ const Navigation = () => {
           >
             CONTACT
           </motion.a>
+          <motion.a 
+            href="/mobile" 
+            className="text-cyan-300 hover:text-cyan-200 transition-colors duration-300 text-sm font-medium tracking-wider border border-cyan-500/30 px-3 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20"
+            whileHover={{ y: -2, scale: 1.05 }}
+          >
+            MOBILE
+          </motion.a>
         </div>
       </div>
     </motion.nav>

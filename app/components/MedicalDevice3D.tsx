@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useRef, useEffect, useState, useMemo } from 'react';
+import React, { Suspense, useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, OrbitControls, Environment, ContactShadows, Float, useTexture } from '@react-three/drei';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
@@ -29,6 +29,49 @@ const isWebGLAvailable = () => {
   }
 };
 
+// WebGL Context Manager
+class WebGLContextManager {
+  private static instance: WebGLContextManager;
+  private activeContexts: Set<WebGLRenderingContext> = new Set();
+  private maxContexts = 4; // Limit concurrent contexts
+
+  static getInstance(): WebGLContextManager {
+    if (!WebGLContextManager.instance) {
+      WebGLContextManager.instance = new WebGLContextManager();
+    }
+    return WebGLContextManager.instance;
+  }
+
+  registerContext(gl: WebGLRenderingContext): boolean {
+    if (this.activeContexts.size >= this.maxContexts) {
+      console.warn('Maximum WebGL contexts reached, reusing existing context');
+      return false;
+    }
+    this.activeContexts.add(gl);
+    return true;
+  }
+
+  unregisterContext(gl: WebGLRenderingContext): void {
+    this.activeContexts.delete(gl);
+  }
+
+  getActiveContextCount(): number {
+    return this.activeContexts.size;
+  }
+
+  cleanup(): void {
+    this.activeContexts.forEach(gl => {
+      try {
+        const ext = gl.getExtension('WEBGL_lose_context');
+        if (ext) ext.loseContext();
+      } catch (e) {
+        console.warn('Error during WebGL cleanup:', e);
+      }
+    });
+    this.activeContexts.clear();
+  }
+}
+
 interface MedicalDeviceModelProps {
   url: string;
   scale?: number;
@@ -37,7 +80,7 @@ interface MedicalDeviceModelProps {
   deviceName: string;
 }
 
-// Enhanced 3D Model with Safari Compatibility
+// Enhanced 3D Model with Safari Compatibility and Context Management
 const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({ 
   url, 
   scale = 0.5,
@@ -47,6 +90,7 @@ const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
 }) => {
   const [modelError, setModelError] = useState(false);
   const meshRef = useRef<THREE.Group>(null);
+  const { gl } = useThree();
 
   // Use useGLTF hook at top level (cannot be conditional)
   const gltf = useGLTF(url);
@@ -59,6 +103,30 @@ const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
       setModelError(false);
     }
   }, [gltf]);
+
+  // WebGL Context Loss Handler
+  useEffect(() => {
+    const canvas = gl.domElement;
+    
+    const handleContextLost = (event: Event) => {
+      console.warn('WebGL context lost, preventing default behavior');
+      event.preventDefault();
+      setModelError(true);
+    };
+
+    const handleContextRestored = () => {
+      console.log('WebGL context restored');
+      setModelError(false);
+    };
+
+    canvas.addEventListener('webglcontextlost', handleContextLost);
+    canvas.addEventListener('webglcontextrestored', handleContextRestored);
+
+    return () => {
+      canvas.removeEventListener('webglcontextlost', handleContextLost);
+      canvas.removeEventListener('webglcontextrestored', handleContextRestored);
+    };
+  }, [gl]);
 
   // Camera animation based on scroll with enhanced stages
   const cameraStages = useMemo(() => {
@@ -198,46 +266,53 @@ const PremiumLighting: React.FC<{ scrollData: ScrollData }> = ({ scrollData }) =
         color="#ffffff"
         intensity={0.4}
         castShadow
-        shadow-mapSize-width={4096}
-        shadow-mapSize-height={4096}
-        shadow-camera-near={0.1}
-        shadow-camera-far={50}
-        shadow-camera-left={-15}
-        shadow-camera-right={15}
-        shadow-camera-top={15}
-        shadow-camera-bottom={-15}
-        shadow-bias={-0.0001}
-      />
-      
-      {/* Accent lights for material enhancement - very subtle */}
-      <pointLight 
-        position={[-10, 6, -6]} 
-        intensity={0.15}
-        color="#4f46e5" 
-        decay={2}
-        distance={20}
-      />
-      <pointLight 
-        position={[10, -4, 6]} 
-        intensity={0.1}
-        color="#06b6d4" 
-        decay={2}
-        distance={20}
-      />
-      
-      {/* Ambient lighting for overall illumination - minimal */}
-      <ambientLight intensity={0.25} color="#f8fafc" />
-      
-      {/* Premium rim lighting - very subtle */}
-      <spotLight
-        position={[0, 15, 8]}
-        angle={0.25}
-        penumbra={0.8}
-        intensity={0.25}
-        color="#ffffff"
-        castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
+        shadow-camera-near={0.5}
+        shadow-camera-far={50}
+        shadow-camera-left={-10}
+        shadow-camera-right={10}
+        shadow-camera-top={10}
+        shadow-camera-bottom={-10}
+      />
+      
+      {/* Subtle rim lighting */}
+      <directionalLight
+        position={[-5, 4, -8]}
+        color="#4f46e5"
+        intensity={0.15}
+      />
+      
+      {/* Sophisticated ambient */}
+      <ambientLight intensity={0.3} color="#f1f5f9" />
+      
+      {/* Key light with scroll-responsive intensity */}
+      <spotLight 
+        position={[10, 10, 5]} 
+        intensity={0.3 + scrollData.progress * 0.2}
+        angle={Math.PI / 6}
+        penumbra={0.5}
+        color="#ffffff" 
+        distance={50}
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+      />
+      
+      {/* Fill light for depth */}
+      <pointLight 
+        position={[-8, 5, 8]} 
+        intensity={0.12}
+        color="#0ea5e9" 
+        distance={40}
+      />
+      
+      {/* Background accent */}
+      <pointLight 
+        position={[0, -5, -10]} 
+        intensity={0.08}
+        color="#8b5cf6" 
+        distance={25}
       />
     </>
   );
@@ -266,7 +341,9 @@ const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
   const [isMounted, setIsMounted] = useState(false);
   const [webGLSupported, setWebGLSupported] = useState(true);
   const [browserIsSafari, setBrowserIsSafari] = useState(false);
+  const [contextLost, setContextLost] = useState(false);
   const lastScrollY = useRef(0);
+  const contextManager = useRef(WebGLContextManager.getInstance());
 
   // Client-side mounting check
   useEffect(() => {
@@ -296,8 +373,72 @@ const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
     }));
   }, [scrollProgress]);
 
-  // Show fallback image if WebGL is not supported or while mounting
-  if (!isMounted || !webGLSupported || !modelUrl) {
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      // Cleanup WebGL resources
+      contextManager.current.cleanup();
+    };
+  }, []);
+
+  // Canvas creation callback with context management
+  const handleCanvasCreated = useCallback((state: any) => {
+    const gl = state.gl.getContext() as WebGLRenderingContext;
+    
+    // Register context with manager
+    const registered = contextManager.current.registerContext(gl);
+    
+    if (!registered) {
+      console.warn('WebGL context limit reached, using fallback');
+      setContextLost(true);
+      return;
+    }
+
+    state.gl.setClearColor(0x000000, 0);
+    
+    if (!isMobile && !browserIsSafari) {
+      state.gl.shadowMap.enabled = true;
+      state.gl.shadowMap.type = THREE.PCFSoftShadowMap;
+    }
+    
+    // Safari-specific optimizations
+    if (browserIsSafari) {
+      gl.disable(gl.DEPTH_TEST);
+      gl.enable(gl.DEPTH_TEST);
+    }
+
+    // Context loss prevention
+    const handleContextLost = (event: Event) => {
+      event.preventDefault();
+      setContextLost(true);
+      setIsModelLoaded(false);
+    };
+
+    const handleContextRestored = () => {
+      setContextLost(false);
+      // Re-register context
+      contextManager.current.registerContext(gl);
+    };
+
+    state.gl.domElement.addEventListener('webglcontextlost', handleContextLost);
+    state.gl.domElement.addEventListener('webglcontextrestored', handleContextRestored);
+
+    return () => {
+      contextManager.current.unregisterContext(gl);
+      state.gl.domElement.removeEventListener('webglcontextlost', handleContextLost);
+      state.gl.domElement.removeEventListener('webglcontextrestored', handleContextRestored);
+    };
+  }, [isMobile, browserIsSafari]);
+
+  // Error handler for WebGL issues
+  const handleCanvasError = useCallback((error: any) => {
+    console.warn('WebGL Error:', error);
+    setContextLost(true);
+    setIsModelLoaded(false);
+  }, []);
+
+  // Show fallback image if WebGL is not supported, context is lost, or while mounting
+  if (!isMounted || !webGLSupported || !modelUrl || contextLost) {
     return (
       <div className="absolute inset-0 flex items-center justify-center">
         <motion.img 
@@ -313,79 +454,46 @@ const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
             rotateY: { duration: 0.1 }
           }}
         />
+        {contextLost && (
+          <div className="absolute bottom-4 left-4 right-4 text-center">
+            <p className="text-white/60 text-xs">WebGL context lost - showing fallback</p>
+          </div>
+        )}
       </div>
     );
   }
 
   return (
     <div className="absolute inset-0">
-      {/* Fallback image for when 3D fails */}
-      {!isModelLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <motion.img 
-            src={fallbackImage} 
-            alt={deviceName}
-            className="max-w-full max-h-full object-contain filter drop-shadow-2xl opacity-30"
-            animate={{
-              scale: [1, 1.05, 1],
-              rotateY: scrollProgress * 360,
-            }}
-            transition={{
-              scale: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-              rotateY: { duration: 0.1 }
-            }}
-          />
-        </div>
-      )}
+
       
       <Canvas
         camera={{ 
-          position: [0, 0, 4.5],
-          fov: isMobile ? 70 : 55, // Wider FOV on mobile
+          position: [0, 0, isMobile ? 2.8 : 4.5],
+          fov: isMobile ? 75 : 55,
           near: 0.1,
           far: 100
         }}
-        shadows={!isMobile && !browserIsSafari} // Disable shadows on mobile and Safari
+        shadows={!isMobile && !browserIsSafari}
         gl={{ 
-          antialias: !isMobile && !browserIsSafari, // Disable antialiasing on mobile and Safari
+          antialias: !isMobile && !browserIsSafari,
           alpha: true,
           powerPreference: (isMobile || browserIsSafari) ? "default" : "high-performance",
-          preserveDrawingBuffer: browserIsSafari, // Important for Safari
-          failIfMajorPerformanceCaveat: false, // Allow Safari to use software rendering if needed
+          preserveDrawingBuffer: browserIsSafari,
+          failIfMajorPerformanceCaveat: false,
           toneMapping: browserIsSafari ? THREE.LinearToneMapping : THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 0.6
+          toneMappingExposure: 0.6,
+          // Context management settings
+          stencil: false,
+          depth: true,
+          premultipliedAlpha: false
         }}
-        dpr={(isMobile || browserIsSafari) ? 1 : [1, 2]} // Fixed DPR on mobile and Safari
+        dpr={(isMobile || browserIsSafari) ? 1 : [1, 2]}
         style={{ background: 'transparent' }}
-        onCreated={(state) => {
-          state.gl.setClearColor(0x000000, 0);
-          if (!isMobile && !browserIsSafari) {
-            state.gl.shadowMap.enabled = true;
-            state.gl.shadowMap.type = THREE.PCFSoftShadowMap;
-          }
-          // Safari-specific optimizations
-          if (browserIsSafari) {
-            const gl = state.gl.getContext() as WebGLRenderingContext;
-            gl.disable(gl.DEPTH_TEST);
-            gl.enable(gl.DEPTH_TEST);
-          }
-        }}
-        onError={(error) => {
-          console.warn('WebGL Error:', error);
-          setIsModelLoaded(false);
-        }}
+        onCreated={handleCanvasCreated}
+        onError={handleCanvasError}
       >
-        <Suspense fallback={
-          <mesh>
-            <octahedronGeometry args={[1, 2]} />
-            <meshStandardMaterial 
-              color="#334155" 
-              wireframe 
-              transparent 
-              opacity={0.5}
-            />
-          </mesh>
-        }>
+        <Suspense fallback={null}>
           {/* Conditional lighting based on browser and device */}
           {(isMobile || browserIsSafari) ? (
             <SafariLighting scrollData={scrollData} />
@@ -398,10 +506,10 @@ const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
             url={modelUrl}
             scale={
               (isMobile || browserIsSafari)
-                ? (deviceName.includes('Hyperbaric') ? 0.8 : deviceName.includes('CRYO') ? 0.9 : 1.0)
+                ? (deviceName.includes('Hyperbaric') ? 1.5 : deviceName.includes('CRYO') ? 1.3 : 1.7)
                 : (deviceName.includes('Hyperbaric') ? 1.3 : deviceName.includes('CRYO') ? 1.4 : 1.5)
             }
-            position={[0, (isMobile || browserIsSafari) ? -0.1 : -0.3, 0]}
+            position={[0, (isMobile || browserIsSafari) ? 0 : -0.3, 0]}
             scrollData={scrollData}
             deviceName={deviceName}
           />
@@ -429,29 +537,7 @@ const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
         </Suspense>
       </Canvas>
       
-      {/* Loading indicator with browser-specific messaging */}
-      {!isModelLoaded && (
-        <motion.div
-          className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 0 }}
-          transition={{ delay: (isMobile || browserIsSafari) ? 4 : 2, duration: 1 }}
-          onAnimationComplete={() => setIsModelLoaded(true)}
-        >
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 md:h-12 md:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-white text-xs md:text-sm">
-              {browserIsSafari ? 'Optimizing for Safari...' : 
-               isMobile ? 'Loading 3D Model...' : 'Loading 3D Model...'}
-            </p>
-            {!webGLSupported && (
-              <p className="text-yellow-400 text-xs mt-2">
-                WebGL not supported - showing fallback
-              </p>
-            )}
-          </div>
-        </motion.div>
-      )}
+
     </div>
   );
 };
