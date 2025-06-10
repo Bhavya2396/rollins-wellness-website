@@ -260,7 +260,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ product }) => {
 
 // Phase descriptions
 const getPhaseDescription = (phase: string, deviceName: string): string => {
-  const descriptions = {
+  const descriptions: Record<string, string> = {
     intro: `Begin your journey exploring the ${deviceName}. Watch as it comes to life with interactive 3D visualization.`,
     explore: `Discover the exterior design and build quality. Notice the premium materials and precision engineering.`,
     analyze: `Examine the advanced features and technology components. See how each system integrates seamlessly.`,
