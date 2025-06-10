@@ -4,10 +4,14 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValue } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
-// Dynamic import to prevent SSR issues
+// Dynamic imports to prevent SSR issues
 const MedicalDevice3D = dynamic(() => import('./components/MedicalDevice3D'), { 
   ssr: false,
   loading: () => <div className="w-full h-full bg-[#2a3142]" />
+});
+
+const CinematicLoader = dynamic(() => import('./components/CinematicLoader'), {
+  ssr: false
 });
 
 const devices = [
@@ -97,11 +101,24 @@ export default function Home() {
   
   const { scrollYProgress } = useScroll();
   
-  // Enhanced loading sequence
+  // Enhanced loading sequence with localStorage check
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 2000);
-    return () => clearTimeout(timer);
+    // Check if user has seen intro before
+    const hasSeenIntro = localStorage.getItem('rollins-intro-seen') === 'true';
+    if (hasSeenIntro) {
+      // Skip loading for returning users
+      setIsLoading(false);
+    }
+    // If not seen before, CinematicLoader will handle showing and completion
   }, []);
+
+  // Dev function to reset intro (only in development)
+  const resetIntro = () => {
+    if (process.env.NODE_ENV === 'development') {
+      localStorage.removeItem('rollins-intro-seen');
+      setIsLoading(true);
+    }
+  };
 
   // Scroll progress tracking for feature highlighting
   useEffect(() => {
@@ -185,32 +202,21 @@ export default function Home() {
   if (isLoading) {
     return (
       <AnimatePresence>
-        <motion.div 
-          className="min-h-screen bg-[#2a3142] flex items-center justify-center relative overflow-hidden"
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1 }}
-        >
-          <motion.div
-            className="text-center z-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <motion.div
-              className="w-16 h-16 border-2 border-white/30 border-t-white rounded-full mx-auto mb-8"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            />
-            <h1 className="text-2xl font-light text-white mb-4 tracking-[0.3em] uppercase">ROLLINS WELLNESS</h1>
-            <p className="text-white/60 text-sm tracking-wide">Wellness Technology</p>
-          </motion.div>
-        </motion.div>
+        <CinematicLoader 
+          onComplete={() => setIsLoading(false)} 
+          isMobile={false}
+        />
       </AnimatePresence>
     );
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <motion.div 
+      className="relative min-h-screen overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1.5, ease: "easeOut" }}
+    >
       {/* Dynamic Background System - Changes per product */}
       <div className="fixed inset-0 z-0">
         {/* Dynamic primary gradient based on current device */}
@@ -434,7 +440,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Rollins has mechanically advanced, powerful and captivating medical devices that deliver {currentDeviceData.description.toLowerCase()}
+              {currentDeviceData.description}
             </motion.p>
             
             {/* Human Body Effects - Enhanced Medical Visualization */}
@@ -1654,8 +1660,18 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Scroll Area for Interaction */}
-      <div className="relative z-10 h-[300vh] md:h-[500vh]" />
-    </div>
-  );
+              {/* Scroll Area for Interaction */}
+        <div className="relative z-10 h-[300vh] md:h-[500vh]" />
+
+        {/* Dev Reset Button - Only in Development */}
+        {process.env.NODE_ENV === 'development' && (
+          <button
+            onClick={resetIntro}
+            className="fixed bottom-4 left-4 z-50 px-3 py-2 bg-red-600 text-white text-xs rounded opacity-50 hover:opacity-100 transition-opacity"
+          >
+            Reset Intro
+          </button>
+        )}
+      </motion.div>
+    );
 } 

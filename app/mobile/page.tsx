@@ -4,10 +4,14 @@ import React, { useState, useEffect, Suspense, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
-// Dynamic import to prevent SSR issues
+// Dynamic imports to prevent SSR issues
 const MedicalDevice3D = dynamic(() => import('../components/MedicalDevice3D'), { 
   ssr: false,
   loading: () => <div className="w-full h-full bg-[#2a3142] rounded-xl" />
+});
+
+const CinematicLoader = dynamic(() => import('../components/CinematicLoader'), {
+  ssr: false
 });
 
 const devices = [
@@ -95,10 +99,66 @@ export default function MobilePage() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showSpecs, setShowSpecs] = useState(false);
   const [showBenefits, setShowBenefits] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const { scrollYProgress } = useScroll();
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Enhanced loading sequence with localStorage check
+  useEffect(() => {
+    // Check if user has seen intro before
+    const hasSeenIntro = localStorage.getItem('rollins-intro-seen') === 'true';
+    if (hasSeenIntro) {
+      // Skip loading for returning users
+      setIsLoading(false);
+    }
+    // If not seen before, CinematicLoader will handle showing and completion
+  }, []);
+
+  // Auto-cycle benefits
+  useEffect(() => {
+    if (!isLoading) {
+      const interval = setInterval(() => {
+        setActiveBenefitIndex((prev) => 
+          (prev + 1) % Math.min(devices[currentDevice].benefits.length, 4)
+        );
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [currentDevice, isLoading]);
+
+  // Auto-cycle specs
+  useEffect(() => {
+    if (!isLoading) {
+      const interval = setInterval(() => {
+        setActiveSpecIndex((prev) => 
+          (prev + 1) % devices[currentDevice].specs.length
+        );
+      }, 4000);
+      return () => clearInterval(interval);
+    }
+  }, [currentDevice, isLoading]);
+
   const currentDeviceData = devices[currentDevice];
+
+  // Dev function to reset intro (only in development)
+  const resetIntro = () => {
+    if (process.env.NODE_ENV === 'development') {
+      localStorage.removeItem('rollins-intro-seen');
+      setIsLoading(true);
+    }
+  };
+
+  // Show cinematic loader
+  if (isLoading) {
+    return (
+      <AnimatePresence>
+        <CinematicLoader 
+          onComplete={() => setIsLoading(false)} 
+          isMobile={true}
+        />
+      </AnimatePresence>
+    );
+  }
 
   // Device-specific color themes matching desktop
   const getDeviceTheme = (deviceId: string) => {
@@ -164,26 +224,6 @@ export default function MobilePage() {
 
   const theme = getDeviceTheme(currentDeviceData.id);
 
-  // Auto-cycle benefits
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveBenefitIndex((prev) => 
-        (prev + 1) % Math.min(currentDeviceData.benefits.length, 4)
-      );
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [currentDeviceData.benefits.length]);
-
-  // Auto-cycle specs
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveSpecIndex((prev) => 
-        (prev + 1) % currentDeviceData.specs.length
-      );
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [currentDeviceData.specs.length]);
-
   // Handle device changes
   const handleDeviceChange = (index: number) => {
     setCurrentDevice(index);
@@ -192,8 +232,14 @@ export default function MobilePage() {
   };
 
   return (
-    <div ref={containerRef} className="min-h-screen text-white overflow-x-hidden relative">
-      {/* Animated Background matching desktop */}
+    <motion.div 
+      ref={containerRef} 
+      className="min-h-screen text-white overflow-x-hidden relative"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1.5, ease: "easeOut" }}
+    >
+      {/* Enhanced Mobile Background System */}
       <motion.div 
         className="fixed inset-0"
         key={`bg-${currentDevice}`}
@@ -201,41 +247,68 @@ export default function MobilePage() {
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
+        {/* Primary gradient background */}
         <div className={`absolute inset-0 ${theme.bgGradient}`} />
-        <div className={`absolute inset-0 ${theme.overlay}`} />
         
-        {/* Floating orbs */}
+        {/* Enhanced mobile overlay with better depth */}
+        <div className={`absolute inset-0 ${theme.overlay}`} />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/30" />
+        
+        {/* Mobile-optimized floating orbs */}
         <motion.div 
-          className={`absolute top-1/4 left-1/4 w-80 h-80 ${theme.orb1} rounded-full blur-3xl`}
+          className={`absolute top-1/6 left-1/6 w-64 h-64 ${theme.orb1} rounded-full blur-2xl opacity-60`}
           animate={{ 
-            x: [0, 60, 0],
-            y: [0, -30, 0],
-            scale: [1, 1.2, 1]
+            x: [0, 40, 0],
+            y: [0, -20, 0],
+            scale: [1, 1.3, 1],
+            rotate: [0, 180, 360]
           }}
-          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className={`absolute bottom-1/3 right-1/4 w-64 h-64 ${theme.orb2} rounded-full blur-3xl`}
+          className={`absolute bottom-1/4 right-1/6 w-48 h-48 ${theme.orb2} rounded-full blur-2xl opacity-50`}
           animate={{ 
-            x: [0, -40, 0],
-            y: [0, 40, 0],
+            x: [0, -30, 0],
+            y: [0, 30, 0],
+            scale: [1, 1.2, 1],
+            rotate: [360, 180, 0]
+          }}
+          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+        />
+        
+        {/* Additional ambient orbs for depth */}
+        <motion.div 
+          className={`absolute top-2/3 left-1/2 w-32 h-32 ${theme.orb1} rounded-full blur-xl opacity-30`}
+          animate={{ 
+            x: [0, 25, 0],
+            y: [0, -15, 0],
             scale: [1, 1.1, 1]
           }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 6 }}
         />
         
-        {/* Grid pattern */}
-        <div className="absolute inset-0 opacity-5">
+        {/* Enhanced grid pattern for mobile */}
+        <div className="absolute inset-0 opacity-[0.03]">
           <div className="w-full h-full" 
                style={{
                  backgroundImage: `
-                   linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                   linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+                   linear-gradient(rgba(255,255,255,0.15) 0.5px, transparent 0.5px),
+                   linear-gradient(90deg, rgba(255,255,255,0.15) 0.5px, transparent 0.5px)
                  `,
-                 backgroundSize: '40px 40px'
+                 backgroundSize: '30px 30px'
                }}
           />
         </div>
+        
+        {/* Mobile-specific radial gradient for center focus */}
+        <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-black/20" />
+        
+        {/* Subtle noise texture for mobile screens */}
+        <div className="absolute inset-0 opacity-[0.015]" 
+             style={{
+               backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+             }}
+        />
       </motion.div>
 
       {/* Mobile Header */}
@@ -569,7 +642,7 @@ export default function MobilePage() {
             {/* Description */}
             <div className="mb-4">
               <p className="text-white/75 text-sm font-light leading-relaxed">
-                Rollins has mechanically advanced, powerful and captivating medical devices that deliver {currentDeviceData.description.toLowerCase().slice(0, 120)}...
+                {currentDeviceData.description}
               </p>
             </div>
 
@@ -777,6 +850,16 @@ export default function MobilePage() {
           
         </div>
       </motion.div>
-    </div>
+
+      {/* Dev Reset Button - Only in Development */}
+      {process.env.NODE_ENV === 'development' && (
+        <button
+          onClick={resetIntro}
+          className="fixed top-4 left-4 z-50 px-3 py-2 bg-red-600 text-white text-xs rounded opacity-50 hover:opacity-100 transition-opacity"
+        >
+          Reset Intro
+        </button>
+      )}
+    </motion.div>
   );
 } 
