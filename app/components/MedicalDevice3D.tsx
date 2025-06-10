@@ -48,14 +48,17 @@ const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
   const [modelError, setModelError] = useState(false);
   const meshRef = useRef<THREE.Group>(null);
 
-  // Use useGLTF with error handling
-  let gltf: any;
-  try {
-    gltf = useGLTF(url);
-  } catch (error) {
-    console.warn(`Failed to load 3D model: ${url}`, error);
-    setModelError(true);
-  }
+  // Use useGLTF hook at top level (cannot be conditional)
+  const gltf = useGLTF(url);
+
+  // Handle loading errors with useEffect
+  useEffect(() => {
+    if (!gltf || !gltf.scene) {
+      setModelError(true);
+    } else {
+      setModelError(false);
+    }
+  }, [gltf]);
 
   // Camera animation based on scroll with enhanced stages
   const cameraStages = useMemo(() => {
