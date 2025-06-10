@@ -78,38 +78,22 @@ interface MedicalDeviceModelProps {
   position?: [number, number, number];
   scrollData: ScrollData;
   deviceName: string;
-  isMobile?: boolean;
 }
 
-// Enhanced 3D Model with Mobile Auto-Rotation and Product Display Features
-const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({ 
+// Desktop Model - Original Behavior (Restored)
+const DesktopMedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({ 
   url, 
   scale = 0.5,
   position = [0, 0, 0],
   scrollData,
-  deviceName,
-  isMobile = false
+  deviceName
 }) => {
   const [modelError, setModelError] = useState(false);
   const meshRef = useRef<THREE.Group>(null);
-  const { gl, clock } = useThree();
+  const { gl } = useThree();
 
   // Use useGLTF hook at top level (cannot be conditional)
   const gltf = useGLTF(url);
-
-  // Auto-rotation for mobile product display
-  useFrame((state) => {
-    if (meshRef.current && isMobile) {
-      // Smooth auto-rotation for product display
-      meshRef.current.rotation.y = clock.getElapsedTime() * 0.3; // Slow, professional rotation
-      
-      // Subtle floating animation
-      meshRef.current.position.y = position[1] + Math.sin(clock.getElapsedTime() * 0.5) * 0.1;
-      
-      // Optional: slight tilt animation for more dynamic feel
-      meshRef.current.rotation.x = Math.sin(clock.getElapsedTime() * 0.2) * 0.05;
-    }
-  });
 
   // Handle loading errors with useEffect
   useEffect(() => {
@@ -117,22 +101,8 @@ const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
       setModelError(true);
     } else {
       setModelError(false);
-      
-      // Optimize for mobile rendering
-      if (isMobile && gltf.scene) {
-        gltf.scene.traverse((child: any) => {
-          if (child.isMesh) {
-            // Optimize materials for mobile
-            child.castShadow = false;
-            child.receiveShadow = false;
-            if (child.material) {
-              child.material.shadowSide = THREE.FrontSide;
-            }
-          }
-        });
-      }
     }
-  }, [gltf, isMobile]);
+  }, [gltf]);
 
   // WebGL Context Loss Handler
   useEffect(() => {
@@ -158,27 +128,19 @@ const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
     };
   }, [gl]);
 
-  // Mobile vs Desktop camera behavior
+  // Original desktop camera animation based on scroll
   const cameraStages = useMemo(() => {
-    if (isMobile) {
-      // Simple, clean positioning for mobile auto-rotation
-      return {
-        position: [0, 0, 0],
-        rotation: [0, 0, 0], // Let useFrame handle rotation
-        scale: scale
-      };
-    }
-
-    // Desktop scroll-based camera animation (existing logic)
     const progress = scrollData.progress;
     
     if (progress < 0.15) {
+      // Stage 1: Front view zoom in
       return {
         position: [0, 0, 4.5 - progress * 6.7],
         rotation: [0, 0, 0],
         scale: scale + progress * 0.3
       };
     } else if (progress < 0.30) {
+      // Stage 2: Side angle close-up
       const localProgress = (progress - 0.15) / 0.15;
       return {
         position: [localProgress * 3, 0.5 + localProgress * 0.5, 3.5],
@@ -186,6 +148,7 @@ const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
         scale: scale + 0.3
       };
     } else if (progress < 0.45) {
+      // Stage 3: Top-down dramatic view
       const localProgress = (progress - 0.30) / 0.15;
       return {
         position: [3, 0.5 + localProgress * 2, 3.5 - localProgress * 1],
@@ -193,6 +156,7 @@ const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
         scale: scale + 0.3 - localProgress * 0.1
       };
     } else if (progress < 0.60) {
+      // Stage 4: Extreme close-up sweep left
       const localProgress = (progress - 0.45) / 0.15;
       return {
         position: [3 - localProgress * 6, 2.5, 2.5 - localProgress * 0.8],
@@ -200,6 +164,7 @@ const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
         scale: scale + 0.2 + localProgress * 0.5
       };
     } else if (progress < 0.75) {
+      // Stage 5: Side profile
       const localProgress = (progress - 0.60) / 0.15;
       return {
         position: [-3, 2.5 - localProgress * 1, 1.7],
@@ -207,6 +172,7 @@ const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
         scale: scale + 0.7 - localProgress * 0.2
       };
     } else if (progress < 0.90) {
+      // Stage 6: Rear view dramatic
       const localProgress = (progress - 0.75) / 0.15;
       return {
         position: [-3 + localProgress * 3, 1.5, 1.7 + localProgress * 1],
@@ -214,6 +180,7 @@ const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
         scale: scale + 0.5 - localProgress * 0.1
       };
     } else {
+      // Stage 7: Cinematic overview pullback
       const localProgress = (progress - 0.90) / 0.10;
       return {
         position: [0, 1.5 - localProgress * 1.5, 2.7 + localProgress * 1.8],
@@ -221,7 +188,7 @@ const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
         scale: scale + 0.4 - localProgress * 0.2
       };
     }
-  }, [scrollData.progress, scale, isMobile]);
+  }, [scrollData.progress, scale]);
 
   // If model failed to load, return a placeholder
   if (modelError || !gltf?.scene) {
@@ -237,15 +204,149 @@ const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
     <group ref={meshRef}>
       <primitive 
         object={gltf.scene}
-        position={isMobile ? position : cameraStages.position}
+        position={position}
         scale={cameraStages.scale}
-        rotation={isMobile ? [0, 0, 0] : cameraStages.rotation}
+        rotation={cameraStages.rotation}
       />
     </group>
   );
 };
 
-// Mobile Product Display Lighting System
+// Mobile Model - Auto-Rotation Product Display
+const MobileMedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({ 
+  url, 
+  scale = 0.5,
+  position = [0, 0, 0],
+  scrollData,
+  deviceName
+}) => {
+  const [modelError, setModelError] = useState(false);
+  const meshRef = useRef<THREE.Group>(null);
+  const { gl, clock } = useThree();
+
+  // Use useGLTF hook at top level (cannot be conditional)
+  const gltf = useGLTF(url);
+
+  // Auto-rotation for mobile product display
+  useFrame((state) => {
+    if (meshRef.current) {
+      // Smooth auto-rotation for product display
+      meshRef.current.rotation.y = clock.getElapsedTime() * 0.3; // Slow, professional rotation
+      
+      // Subtle floating animation
+      meshRef.current.position.y = position[1] + Math.sin(clock.getElapsedTime() * 0.5) * 0.1;
+      
+      // Optional: slight tilt animation for more dynamic feel
+      meshRef.current.rotation.x = Math.sin(clock.getElapsedTime() * 0.2) * 0.05;
+    }
+  });
+
+  // Handle loading errors with useEffect
+  useEffect(() => {
+    if (!gltf || !gltf.scene) {
+      setModelError(true);
+    } else {
+      setModelError(false);
+      
+      // Optimize for mobile rendering
+      if (gltf.scene) {
+        gltf.scene.traverse((child: any) => {
+          if (child.isMesh) {
+            // Optimize materials for mobile
+            child.castShadow = false;
+            child.receiveShadow = false;
+            if (child.material) {
+              child.material.shadowSide = THREE.FrontSide;
+            }
+          }
+        });
+      }
+    }
+  }, [gltf]);
+
+  // WebGL Context Loss Handler
+  useEffect(() => {
+    const canvas = gl.domElement;
+    
+    const handleContextLost = (event: Event) => {
+      console.warn('WebGL context lost, preventing default behavior');
+      event.preventDefault();
+      setModelError(true);
+    };
+
+    const handleContextRestored = () => {
+      console.log('WebGL context restored');
+      setModelError(false);
+    };
+
+    canvas.addEventListener('webglcontextlost', handleContextLost);
+    canvas.addEventListener('webglcontextrestored', handleContextRestored);
+
+    return () => {
+      canvas.removeEventListener('webglcontextlost', handleContextLost);
+      canvas.removeEventListener('webglcontextrestored', handleContextRestored);
+    };
+  }, [gl]);
+
+  // If model failed to load, return a placeholder
+  if (modelError || !gltf?.scene) {
+    return (
+      <mesh ref={meshRef} position={position} scale={scale}>
+        <boxGeometry args={[2, 1, 1]} />
+        <meshStandardMaterial color="#334155" transparent opacity={0.6} />
+      </mesh>
+    );
+  }
+
+  return (
+    <group ref={meshRef}>
+      <primitive 
+        object={gltf.scene}
+        position={position}
+        scale={scale}
+        rotation={[0, 0, 0]}
+      />
+    </group>
+  );
+};
+
+// Safari-optimized Lighting System (restored)
+const SafariLighting: React.FC<{ scrollData: ScrollData }> = ({ scrollData }) => {
+  return (
+    <>
+      {/* Simplified environment for Safari */}
+      <Environment background={false}>
+        <mesh scale={100}>
+          <sphereGeometry args={[1, 32, 32]} />
+          <meshBasicMaterial color="#1e293b" side={THREE.BackSide} />
+        </mesh>
+      </Environment>
+      
+      {/* Simplified directional light */}
+      <directionalLight
+        position={[5, 8, 5]}
+        color="#ffffff"
+        intensity={0.5}
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+      />
+      
+      {/* Minimal ambient lighting */}
+      <ambientLight intensity={0.4} color="#f8fafc" />
+      
+      {/* Single accent light */}
+      <pointLight 
+        position={[10, 6, 10]} 
+        intensity={0.2}
+        color="#4f46e5" 
+        distance={30}
+      />
+    </>
+  );
+};
+
+// Mobile Product Display Lighting System (mobile only)
 const MobileProductLighting: React.FC<{ scrollData: ScrollData }> = ({ scrollData }) => {
   return (
     <>
@@ -546,33 +647,48 @@ const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
           {/* Conditional lighting based on browser and device */}
           {isMobile ? (
             <MobileProductLighting scrollData={scrollData} />
-          ) : browserIsSafari ? (
-            <MobileProductLighting scrollData={scrollData} />
+          ) : (browserIsSafari) ? (
+            <SafariLighting scrollData={scrollData} />
           ) : (
             <PremiumLighting scrollData={scrollData} />
           )}
           
-          {/* Medical Device Model with mobile auto-rotation and product display */}
-          <MedicalDeviceModel 
-            url={modelUrl}
-            scale={
-              (isMobile || browserIsSafari)
-                ? (deviceName.includes('Hyperbaric') ? 1.5 : deviceName.includes('CRYO') ? 1.3 : 1.7)
-                : (deviceName.includes('Hyperbaric') ? 1.3 : deviceName.includes('CRYO') ? 1.4 : 1.5)
-            }
-            position={[0, (isMobile || browserIsSafari) ? 0 : -0.3, 0]}
-            scrollData={scrollData}
-            deviceName={deviceName}
-            isMobile={isMobile}
-          />
+          {/* Medical Device Model - Desktop vs Mobile */}
+          {isMobile ? (
+            <MobileMedicalDeviceModel 
+              url={modelUrl}
+              scale={deviceName.includes('Hyperbaric') ? 1.5 : deviceName.includes('CRYO') ? 1.3 : 1.7}
+              position={[0, 0, 0]}
+              scrollData={scrollData}
+              deviceName={deviceName}
+            />
+          ) : (
+            <DesktopMedicalDeviceModel 
+              url={modelUrl}
+              scale={deviceName.includes('Hyperbaric') ? 1.3 : deviceName.includes('CRYO') ? 1.4 : 1.5}
+              position={[0, browserIsSafari ? 0 : -0.3, 0]}
+              scrollData={scrollData}
+              deviceName={deviceName}
+            />
+          )}
           
-          {/* Enhanced shadows for product display */}
-          {!browserIsSafari && (
+          {/* Shadows - desktop restored, mobile optimized */}
+          {isMobile ? (
             <ContactShadows 
               position={[0, -3, 0]} 
-              opacity={isMobile ? 0.4 : 0.6} 
-              scale={isMobile ? 20 : 30} 
-              blur={isMobile ? 12 : 8} 
+              opacity={0.4} 
+              scale={20} 
+              blur={12} 
+              far={20}
+              color="#000000"
+              smooth
+            />
+          ) : !browserIsSafari && (
+            <ContactShadows 
+              position={[0, -3, 0]} 
+              opacity={0.6} 
+              scale={30} 
+              blur={8} 
               far={20}
               color="#000000"
               smooth
