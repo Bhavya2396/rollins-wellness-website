@@ -93,6 +93,7 @@ export default function Home() {
   const [currentDevice, setCurrentDevice] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeSpecIndex, setActiveSpecIndex] = useState(0);
+  const [activeBenefitIndex, setActiveBenefitIndex] = useState(0);
   
   const { scrollYProgress } = useScroll();
   
@@ -138,11 +139,24 @@ export default function Home() {
     };
   }, [currentDevice]);
 
+  // Benefits cycling system
+  useEffect(() => {
+    const benefitInterval = setInterval(() => {
+      setActiveBenefitIndex(prev => {
+        const maxBenefits = Math.min(currentDeviceData.benefits.length, 4);
+        return (prev + 1) % maxBenefits;
+      });
+    }, 3000); // Change every 3 seconds
+
+    return () => clearInterval(benefitInterval);
+  }, [currentDevice, devices]);
+
   // Device switching with scroll reset
   const switchDevice = (index: number) => {
     if (index !== currentDevice) {
       setCurrentDevice(index);
       setActiveSpecIndex(0);
+      setActiveBenefitIndex(0);
       setScrollProgress(0);
       // Reset scroll position to top for new device
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -150,6 +164,23 @@ export default function Home() {
   };
 
   const currentDeviceData = devices[currentDevice];
+
+  // Map benefits to anatomical systems for targeted animations - BENEFIT-SPECIFIC
+  const getBenefitAnimationSystem = (benefitIndex: number, deviceName: string) => {
+    if (deviceName.includes('HYPERBARIC')) {
+      // 0: Brain function, 1: Tissue oxygenation, 2: Inflammation, 3: Wound healing
+      const systems = ['brain-function', 'tissue-oxygenation', 'inflammation-reduction', 'wound-healing'];
+      return systems[benefitIndex] || 'brain-function';
+    } else if (deviceName.includes('UBODY')) {
+      // 0: Collagen production, 1: Skin texture, 2: Fine lines, 3: Muscle recovery
+      const systems = ['collagen-production', 'skin-texture', 'anti-aging', 'muscle-recovery'];
+      return systems[benefitIndex] || 'collagen-production';
+    } else {
+      // 0: Athletic performance, 1: Muscle recovery, 2: Skin rejuvenation, 3: Mood/stress
+      const systems = ['athletic-performance', 'muscle-recovery', 'skin-rejuvenation', 'mood-stress'];
+      return systems[benefitIndex] || 'athletic-performance';
+    }
+  };
 
   if (isLoading) {
     return (
@@ -170,7 +201,7 @@ export default function Home() {
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
             />
-            <h1 className="text-2xl font-light text-white mb-4 tracking-[0.3em] uppercase">ROLLINS</h1>
+            <h1 className="text-2xl font-light text-white mb-4 tracking-[0.3em] uppercase">ROLLINS WELLNESS</h1>
             <p className="text-white/60 text-sm tracking-wide">Wellness Technology</p>
           </motion.div>
         </motion.div>
@@ -179,9 +210,144 @@ export default function Home() {
   }
 
   return (
-    <div className="relative bg-[#2a3142] overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Dynamic Background System - Changes per product */}
+      <div className="fixed inset-0 z-0">
+        {/* Dynamic primary gradient based on current device */}
+        <motion.div 
+          className="absolute inset-0"
+          key={currentDevice}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          {currentDevice === 0 && (
+            <>
+              {/* Hyperbaric Chamber - Deep Ocean Blue Theme */}
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900/30 to-slate-900" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/95 via-blue-900/20 to-slate-900/60" />
+              
+              <motion.div 
+                className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-500/25 to-cyan-500/20 rounded-full blur-3xl"
+                animate={{ 
+                  x: [0, 120, 0],
+                  y: [0, -60, 0],
+                  scale: [1, 1.3, 1]
+                }}
+                transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <motion.div 
+                className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gradient-to-r from-indigo-500/20 to-blue-600/15 rounded-full blur-3xl"
+                animate={{ 
+                  x: [0, -100, 0],
+                  y: [0, 80, 0],
+                  scale: [1, 1.2, 1]
+                }}
+                transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+              />
+            </>
+          )}
+          
+          {currentDevice === 1 && (
+            <>
+              {/* Collagen Bed - Warm Red Light Therapy Theme */}
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-red-900/25 to-slate-900" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/95 via-red-900/15 to-slate-900/60" />
+              
+              <motion.div 
+                className="absolute top-1/3 left-1/5 w-[400px] h-[400px] bg-gradient-to-r from-red-500/20 to-orange-500/15 rounded-full blur-3xl"
+                animate={{ 
+                  x: [0, 80, 0],
+                  y: [0, -40, 0],
+                  scale: [1, 1.4, 1]
+                }}
+                transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <motion.div 
+                className="absolute bottom-1/4 right-1/5 w-72 h-72 bg-gradient-to-r from-amber-500/18 to-red-500/12 rounded-full blur-3xl"
+                animate={{ 
+                  x: [0, -90, 0],
+                  y: [0, 50, 0],
+                  scale: [1, 1.1, 1]
+                }}
+                transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+              />
+            </>
+          )}
+          
+          {currentDevice === 2 && (
+            <>
+              {/* Cryotherapy - Cool Ice Blue Theme */}
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-cyan-900/20 to-slate-900" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/95 via-cyan-900/15 to-slate-900/65" />
+              
+              <motion.div 
+                className="absolute top-1/4 left-1/3 w-[450px] h-[450px] bg-gradient-to-r from-cyan-400/25 to-blue-400/20 rounded-full blur-3xl"
+                animate={{ 
+                  x: [0, 110, 0],
+                  y: [0, -70, 0],
+                  scale: [1, 1.5, 1]
+                }}
+                transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <motion.div 
+                className="absolute bottom-1/3 right-1/3 w-64 h-64 bg-gradient-to-r from-teal-500/22 to-cyan-500/18 rounded-full blur-3xl"
+                animate={{ 
+                  x: [0, -70, 0],
+                  y: [0, 90, 0],
+                  scale: [1, 1.3, 1]
+                }}
+                transition={{ duration: 24, repeat: Infinity, ease: "easeInOut", delay: 6 }}
+              />
+            </>
+          )}
+        </motion.div>
+        
+        {/* Universal elements */}
+        {/* Subtle grid pattern - adapts to current device */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="w-full h-full" 
+               style={{
+                 backgroundImage: `
+                   linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                   linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+                 `,
+                 backgroundSize: '60px 60px'
+               }}
+          />
+        </div>
+        
+        {/* Dynamic light rays based on current device */}
+        <motion.div 
+          className="absolute inset-0 opacity-8"
+          key={`rays-${currentDevice}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.08 }}
+          transition={{ duration: 1.5 }}
+        >
+          {currentDevice === 0 && (
+            <>
+              <div className="absolute top-0 left-1/2 w-1 h-full bg-gradient-to-b from-blue-300 via-transparent to-transparent transform -translate-x-1/2 rotate-12" />
+              <div className="absolute top-0 left-1/3 w-0.5 h-full bg-gradient-to-b from-cyan-400 via-transparent to-transparent transform rotate-8" />
+            </>
+          )}
+          {currentDevice === 1 && (
+            <>
+              <div className="absolute top-0 left-1/2 w-1 h-full bg-gradient-to-b from-red-300 via-transparent to-transparent transform -translate-x-1/2 rotate-15" />
+              <div className="absolute top-0 right-1/3 w-0.5 h-full bg-gradient-to-b from-orange-400 via-transparent to-transparent transform -rotate-10" />
+            </>
+          )}
+          {currentDevice === 2 && (
+            <>
+              <div className="absolute top-0 left-1/2 w-1 h-full bg-gradient-to-b from-cyan-200 via-transparent to-transparent transform -translate-x-1/2 rotate-10" />
+              <div className="absolute top-0 left-1/4 w-0.5 h-full bg-gradient-to-b from-teal-400 via-transparent to-transparent transform rotate-5" />
+            </>
+          )}
+        </motion.div>
+      </div>
+
       {/* Top Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-transparent">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-slate-900/80 via-slate-900/40 to-transparent backdrop-blur-sm">
         <div className="flex justify-between items-center px-4 md:px-12 py-4 md:py-8">
           {/* Left - Brand */}
           <motion.div
@@ -189,7 +355,13 @@ export default function Home() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <h1 className="text-white text-xs md:text-sm font-light tracking-[0.3em] uppercase">ROLLINS</h1>
+            <h1 className={`text-xs md:text-sm font-light tracking-[0.4em] uppercase font-mono transition-colors duration-1000 ${
+              currentDevice === 0 ? 'text-cyan-200' : 
+              currentDevice === 1 ? 'text-red-200' : 
+              'text-teal-200'
+            }`}>
+              ROLLINS WELLNESS
+            </h1>
           </motion.div>
           
           {/* Right - Navigation - Hidden on mobile */}
@@ -199,22 +371,10 @@ export default function Home() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <a href="#" className="text-white/60 hover:text-white text-xs font-light tracking-[0.2em] uppercase transition-colors">Gallery</a>
-            <a href="#" className="text-white/60 hover:text-white text-xs font-light tracking-[0.2em] uppercase transition-colors">About</a>
-            <a href="#" className="text-white/60 hover:text-white text-xs font-light tracking-[0.2em] uppercase transition-colors">Contact</a>
+            <a href="#" className="text-white/70 hover:text-white text-xs tracking-[0.2em] uppercase font-light transition-colors duration-300">GALLERY</a>
+            <a href="#" className="text-white/70 hover:text-white text-xs tracking-[0.2em] uppercase font-light transition-colors duration-300">ABOUT</a>
+            <a href="#" className="text-white/70 hover:text-white text-xs tracking-[0.2em] uppercase font-light transition-colors duration-300">CONTACT</a>
           </motion.div>
-
-          {/* Mobile Menu Button */}
-          <motion.button 
-            className="md:hidden text-white p-2"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-            </svg>
-          </motion.button>
         </div>
       </nav>
 
@@ -230,272 +390,972 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="max-w-sm mx-auto md:mx-0"
           >
-            {/* Product Name - McLaren Style */}
+            {/* Product Name - Enhanced McLaren Style */}
             <div className="mb-8 md:mb-16 text-center md:text-left">
-              <h2 className="text-white text-2xl md:text-5xl font-extralight leading-none mb-1 tracking-wide uppercase">
+              <motion.h2 
+                className={`text-2xl md:text-6xl lg:text-7xl font-thin leading-[0.8] mb-2 tracking-[-0.02em] uppercase font-mono transition-colors duration-1000 ${
+                  currentDevice === 0 ? 'text-cyan-200' : 
+                  currentDevice === 1 ? 'text-red-200' : 
+                  'text-cyan-100'
+                }`}
+                style={{
+                  textShadow: currentDevice === 0 ? '0 0 40px rgba(34, 211, 238, 0.3)' : 
+                             currentDevice === 1 ? '0 0 40px rgba(248, 113, 113, 0.3)' : 
+                             '0 0 40px rgba(34, 211, 238, 0.2)',
+                  fontFeatureSettings: '"ss01" 1, "kern" 1'
+                }}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
                 {currentDeviceData.name}
-              </h2>
-              <h3 className="text-white text-2xl md:text-5xl font-extralight leading-none tracking-wide uppercase">
+              </motion.h2>
+              <motion.h3 
+                className={`text-lg md:text-2xl font-light leading-tight tracking-[0.1em] uppercase transition-colors duration-1000 ${
+                  currentDevice === 0 ? 'text-blue-300/90' : 
+                  currentDevice === 1 ? 'text-orange-300/90' : 
+                  'text-teal-300/90'
+                }`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
                 {currentDeviceData.model}
-              </h3>
+              </motion.h3>
             </div>
             
-            {/* Description - McLaren Style */}
-            <p className="text-white/70 text-sm md:text-base leading-relaxed mb-12 md:mb-20 font-light max-w-sm text-center md:text-left">
-              {currentDeviceData.description}
-            </p>
+
+
+            {/* Description - Enhanced McLaren Style */}
+            <motion.p 
+              className="text-white/75 text-sm md:text-base leading-relaxed mb-12 md:mb-20 font-light max-w-sm text-center md:text-left"
+              style={{ lineHeight: '1.6' }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              Rollins has mechanically advanced, powerful and captivating medical devices that deliver {currentDeviceData.description.toLowerCase()}
+            </motion.p>
             
-            {/* Human Body Effects - Medical Style */}
+            {/* Human Body Effects - Enhanced Medical Visualization */}
             <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6">
               <div className="relative flex-shrink-0">
-                {/* Human Body SVG - Smaller on mobile */}
+                {/* Human Body SVG - Enhanced Anatomy */}
                 <svg 
                   width="80" 
                   height="140" 
                   viewBox="0 0 120 200" 
                   className="md:w-[120px] md:h-[200px] filter drop-shadow-lg"
                 >
-                  {/* Body Silhouette */}
+                  {/* Enhanced Body Silhouette with more anatomical detail */}
                   <path
-                    d="M60 10 C65 10 70 15 70 22 C70 30 65 35 60 38 C55 35 50 30 50 22 C50 15 55 10 60 10 Z
-                       M60 38 C65 38 68 40 68 45 L68 55 C68 60 65 62 60 62 C55 62 52 60 52 55 L52 45 C52 40 55 38 60 38 Z
-                       M60 62 C70 62 75 65 75 75 L75 120 C75 130 70 135 60 135 C50 135 45 130 45 120 L45 75 C45 65 50 62 60 62 Z
-                       M60 135 L58 160 L55 190 L50 195 L45 190 L48 160 L52 135
-                       M60 135 L62 160 L65 190 L70 195 L75 190 L72 160 L68 135
-                       M52 70 L35 75 L30 85 L35 95 L45 90 L52 85
-                       M68 70 L85 75 L90 85 L85 95 L75 90 L68 85"
-                    fill="rgba(255, 255, 255, 0.1)"
-                    stroke="rgba(255, 255, 255, 0.3)"
-                    strokeWidth="1"
+                    d="M60 8 C67 8 72 13 72 22 C72 30 67 36 60 38 C53 36 48 30 48 22 C48 13 53 8 60 8 Z
+                       M60 38 C67 38 70 42 70 48 L70 56 C70 62 67 64 60 64 C53 64 50 62 50 56 L50 48 C50 42 53 38 60 38 Z
+                       M60 64 C72 64 77 67 77 77 L77 122 C77 132 72 137 60 137 C48 137 43 132 43 122 L43 77 C43 67 48 64 60 64 Z
+                       M60 137 L58 162 L55 192 L48 197 L43 192 L46 162 L50 137
+                       M60 137 L62 162 L65 192 L72 197 L77 192 L74 162 L70 137
+                       M50 72 L32 77 L27 87 L32 97 L43 92 L50 87
+                       M70 72 L88 77 L93 87 L88 97 L77 92 L70 87"
+                    fill="rgba(255, 255, 255, 0.12)"
+                    stroke="rgba(255, 255, 255, 0.35)"
+                    strokeWidth="1.2"
                   />
                   
-                  {/* Effect Areas Based on Device */}
+                  {/* Anatomical Reference Lines */}
+                  <defs>
+                    <radialGradient id="energyGradient" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="rgba(255,255,255,0.6)" />
+                      <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
+                    </radialGradient>
+                    <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="rgba(59, 130, 246, 0.8)" />
+                      <stop offset="50%" stopColor="rgba(139, 92, 246, 0.6)" />
+                      <stop offset="100%" stopColor="rgba(16, 185, 129, 0.4)" />
+                    </linearGradient>
+                  </defs>
+                  
+                  {/* Device-Specific Therapeutic Effects - Accurate Benefit Representation */}
                   {currentDeviceData.name.includes('HYPERBARIC') ? (
                     <>
-                      {/* Brain/Head Area */}
-                      <motion.circle
-                        cx="60"
-                        cy="22"
-                        r="12"
-                        fill="rgba(59, 130, 246, 0.3)"
-                        stroke="rgba(59, 130, 246, 0.8)"
-                        strokeWidth="2"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.2, duration: 0.8 }}
-                      />
+                      {/* BENEFIT 0: Improved brain function and metabolism */}
+                      {getBenefitAnimationSystem(activeBenefitIndex, currentDeviceData.name) === 'brain-function' && (
+                        <motion.g key="brain-function">
+                          {/* Enhanced brain with metabolic activity */}
+                          <motion.circle
+                            cx="60"
+                            cy="22"
+                            r="16"
+                            fill="rgba(59, 130, 246, 0.15)"
+                            stroke="rgba(59, 130, 246, 0.8)"
+                            strokeWidth="2"
+                            animate={{ 
+                              scale: [1, 1.15, 1], 
+                              opacity: [0.6, 1, 0.6] 
+                            }}
+                            transition={{ 
+                              duration: 2.5,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          />
+                          {/* Neural firing patterns - representing improved function */}
+                          {[...Array(8)].map((_, i) => (
+                            <motion.circle
+                              key={i}
+                              cx={60 + Math.cos(i * Math.PI / 4) * 12}
+                              cy={22 + Math.sin(i * Math.PI / 4) * 12}
+                              r="2"
+                              fill="rgba(251, 191, 36, 0.8)"
+                              animate={{ 
+                                scale: [0, 1.5, 0],
+                                opacity: [0, 1, 0]
+                              }}
+                              transition={{ 
+                                delay: i * 0.2, 
+                                duration: 1.6,
+                                repeat: Infinity,
+                                ease: "easeOut"
+                              }}
+                            />
+                          ))}
+                          {/* Metabolic energy indicators */}
+                          <motion.path
+                            d="M50 22 Q60 15 70 22 Q60 29 50 22"
+                            fill="none"
+                            stroke="rgba(251, 191, 36, 0.9)"
+                            strokeWidth="2"
+                            strokeDasharray="2,2"
+                            animate={{ 
+                              strokeDashoffset: [0, -8],
+                              opacity: [0.5, 1, 0.5]
+                            }}
+                            transition={{ 
+                              strokeDashoffset: { duration: 1, repeat: Infinity, ease: "linear" },
+                              opacity: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                            }}
+                          />
+                        </motion.g>
+                      )}
                       
-                      {/* Circulatory System */}
-                      <motion.circle
-                        cx="60"
-                        cy="50"
-                        r="8"
-                        fill="rgba(239, 68, 68, 0.3)"
-                        stroke="rgba(239, 68, 68, 0.8)"
-                        strokeWidth="2"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.4, duration: 0.8 }}
-                      />
+                      {/* BENEFIT 1: Increased tissue oxygenation */}
+                      {getBenefitAnimationSystem(activeBenefitIndex, currentDeviceData.name) === 'tissue-oxygenation' && (
+                        <motion.g key="tissue-oxygenation">
+                          {/* Oxygen saturation throughout body tissues */}
+                          <motion.rect
+                            x="40"
+                            y="60"
+                            width="40"
+                            height="80"
+                            rx="20"
+                            fill="rgba(16, 185, 129, 0.1)"
+                            stroke="rgba(16, 185, 129, 0.6)"
+                            strokeWidth="2"
+                            strokeDasharray="6,3"
+                            animate={{ 
+                              strokeDashoffset: [0, -18],
+                              opacity: [0.4, 0.9, 0.4]
+                            }}
+                            transition={{ 
+                              strokeDashoffset: { duration: 2, repeat: Infinity, ease: "linear" },
+                              opacity: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+                            }}
+                          />
+                          {/* Oxygen molecules flowing through tissues */}
+                          {[...Array(12)].map((_, i) => (
+                            <motion.circle
+                              key={i}
+                              cx={45 + (i % 3) * 15}
+                              cy={70 + Math.floor(i / 3) * 20}
+                              r="2"
+                              fill="rgba(16, 185, 129, 0.9)"
+                              animate={{ 
+                                scale: [1, 1.8, 1],
+                                opacity: [0.4, 1, 0.4]
+                              }}
+                              transition={{ 
+                                delay: i * 0.15, 
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            />
+                          ))}
+                          {/* Oxygen flow from lungs */}
+                          <motion.path
+                            d="M60 45 Q50 50 45 60 Q55 70 65 75 Q70 65 75 60 Q65 50 60 45"
+                            fill="none"
+                            stroke="rgba(16, 185, 129, 0.8)"
+                            strokeWidth="3"
+                            strokeDasharray="4,2"
+                            animate={{ strokeDashoffset: [0, -12] }}
+                            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                          />
+                        </motion.g>
+                      )}
                       
-                      {/* Whole Body Oxygenation */}
-                      <motion.rect
-                        x="45"
-                        y="62"
-                        width="30"
-                        height="70"
-                        rx="15"
-                        fill="rgba(16, 185, 129, 0.2)"
-                        stroke="rgba(16, 185, 129, 0.6)"
-                        strokeWidth="2"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.6, duration: 0.8 }}
-                      />
+                      {/* BENEFIT 2: Reduced inflammation and swelling */}
+                      {getBenefitAnimationSystem(activeBenefitIndex, currentDeviceData.name) === 'inflammation-reduction' && (
+                        <motion.g key="inflammation-reduction">
+                          {/* Anti-inflammatory field reducing swelling */}
+                          <motion.ellipse
+                            cx="60"
+                            cy="85"
+                            rx="32"
+                            ry="40"
+                            fill="rgba(59, 130, 246, 0.1)"
+                            stroke="rgba(59, 130, 246, 0.7)"
+                            strokeWidth="2"
+                            strokeDasharray="8,4"
+                            animate={{ 
+                              strokeDashoffset: [0, -24],
+                              scale: [1.1, 1, 1.1],
+                              opacity: [0.3, 0.8, 0.3]
+                            }}
+                            transition={{ 
+                              strokeDashoffset: { duration: 3, repeat: Infinity, ease: "linear" },
+                              scale: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+                              opacity: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+                            }}
+                          />
+                          {/* Inflammation markers being reduced */}
+                          {[
+                            { x: 45, y: 75, delay: 0.0 },
+                            { x: 75, y: 80, delay: 0.3 },
+                            { x: 50, y: 100, delay: 0.6 },
+                            { x: 70, y: 110, delay: 0.9 },
+                            { x: 60, y: 90, delay: 1.2 }
+                          ].map((point, i) => (
+                            <motion.g key={i}>
+                              {/* Inflammation marker shrinking */}
+                              <motion.circle
+                                cx={point.x}
+                                cy={point.y}
+                                r="4"
+                                fill="rgba(239, 68, 68, 0.6)"
+                                stroke="rgba(239, 68, 68, 0.8)"
+                                strokeWidth="1"
+                                animate={{ 
+                                  scale: [1.5, 0.5, 1.5],
+                                  opacity: [0.8, 0.2, 0.8]
+                                }}
+                                transition={{ 
+                                  delay: point.delay, 
+                                  duration: 2,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                              />
+                              {/* Healing wave */}
+                              <motion.circle
+                                cx={point.x}
+                                cy={point.y}
+                                r="8"
+                                fill="none"
+                                stroke="rgba(59, 130, 246, 0.4)"
+                                strokeWidth="1"
+                                animate={{ 
+                                  scale: [1, 2.5],
+                                  opacity: [0.6, 0]
+                                }}
+                                transition={{ 
+                                  delay: point.delay + 0.5, 
+                                  duration: 1.5,
+                                  repeat: Infinity,
+                                  ease: "easeOut"
+                                }}
+                              />
+                            </motion.g>
+                          ))}
+                        </motion.g>
+                      )}
                       
-                      {/* Wound Healing Areas */}
-                      <motion.circle
-                        cx="45"
-                        cy="85"
-                        r="4"
-                        fill="rgba(139, 92, 246, 0.4)"
-                        stroke="rgba(139, 92, 246, 1)"
-                        strokeWidth="1"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.8, duration: 0.8 }}
-                      />
-                      <motion.circle
-                        cx="75"
-                        cy="95"
-                        r="4"
-                        fill="rgba(139, 92, 246, 0.4)"
-                        stroke="rgba(139, 92, 246, 1)"
-                        strokeWidth="1"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 1.0, duration: 0.8 }}
-                      />
+                      {/* BENEFIT 3: Enhanced wound healing */}
+                      {getBenefitAnimationSystem(activeBenefitIndex, currentDeviceData.name) === 'wound-healing' && (
+                        <motion.g key="wound-healing">
+                          {/* Wound sites with active healing */}
+                          {[
+                            { x: 48, y: 80, size: 6, delay: 0.0 },
+                            { x: 72, y: 95, size: 5, delay: 0.4 },
+                            { x: 55, y: 115, size: 4, delay: 0.8 }
+                          ].map((wound, i) => (
+                            <motion.g key={i}>
+                              {/* Wound area - healing from outside in */}
+                              <motion.circle
+                                cx={wound.x}
+                                cy={wound.y}
+                                r={wound.size}
+                                fill="rgba(139, 92, 246, 0.2)"
+                                stroke="rgba(139, 92, 246, 0.9)"
+                                strokeWidth="2"
+                                animate={{ 
+                                  scale: [1.2, 0.8, 1.2],
+                                  opacity: [0.5, 1, 0.5]
+                                }}
+                                transition={{ 
+                                  delay: wound.delay, 
+                                  duration: 3,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                              />
+                              {/* Tissue regeneration particles */}
+                              {[...Array(6)].map((_, j) => (
+                                <motion.circle
+                                  key={j}
+                                  cx={wound.x + Math.cos(j * Math.PI / 3) * wound.size * 1.5}
+                                  cy={wound.y + Math.sin(j * Math.PI / 3) * wound.size * 1.5}
+                                  r="1.5"
+                                  fill="rgba(16, 185, 129, 0.8)"
+                                  animate={{ 
+                                    scale: [0, 1, 0],
+                                    opacity: [0, 1, 0]
+                                  }}
+                                  transition={{ 
+                                    delay: wound.delay + j * 0.1, 
+                                    duration: 1.5,
+                                    repeat: Infinity,
+                                    ease: "easeOut"
+                                  }}
+                                />
+                              ))}
+                              {/* Healing progression waves */}
+                              <motion.circle
+                                cx={wound.x}
+                                cy={wound.y}
+                                r={wound.size * 2}
+                                fill="none"
+                                stroke="rgba(16, 185, 129, 0.5)"
+                                strokeWidth="1"
+                                animate={{ 
+                                  scale: [1, 2],
+                                  opacity: [0.8, 0]
+                                }}
+                                transition={{ 
+                                  delay: wound.delay + 0.5, 
+                                  duration: 2,
+                                  repeat: Infinity,
+                                  ease: "easeOut"
+                                }}
+                              />
+                            </motion.g>
+                          ))}
+                        </motion.g>
+                      )}
                     </>
                   ) : currentDeviceData.name.includes('UBODY') ? (
                     <>
-                      {/* Skin/Surface Areas for Red Light Therapy */}
-                      <motion.path
-                        d="M45 40 Q60 35 75 40 Q80 50 75 60 Q60 65 45 60 Q40 50 45 40 Z"
-                        fill="rgba(248, 113, 113, 0.3)"
-                        stroke="rgba(248, 113, 113, 0.8)"
-                        strokeWidth="2"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.2, duration: 0.8 }}
-                      />
+                      {/* BENEFIT 0: Enhanced collagen production */}
+                      {getBenefitAnimationSystem(activeBenefitIndex, currentDeviceData.name) === 'collagen-production' && (
+                        <motion.g key="collagen-production">
+                          {/* Collagen synthesis in dermis */}
+                          <motion.path
+                            d="M40 40 Q60 35 80 40 Q85 55 80 70 Q60 75 40 70 Q35 55 40 40 Z"
+                            fill="rgba(248, 113, 113, 0.2)"
+                            stroke="rgba(248, 113, 113, 0.8)"
+                            strokeWidth="2"
+                            strokeDasharray="6,3"
+                            animate={{ 
+                              strokeDashoffset: [0, -18],
+                              opacity: [0.4, 0.9, 0.4]
+                            }}
+                            transition={{ 
+                              strokeDashoffset: { duration: 2, repeat: Infinity, ease: "linear" },
+                              opacity: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+                            }}
+                          />
+                          {/* Collagen fiber formation */}
+                          {[...Array(8)].map((_, i) => (
+                            <motion.path
+                              key={i}
+                              d={`M${45 + i * 4} 45 Q${50 + i * 4} ${40 + Math.sin(i) * 5} ${55 + i * 4} 55 Q${50 + i * 4} ${60 + Math.sin(i) * 5} ${45 + i * 4} 65`}
+                              fill="none"
+                              stroke="rgba(251, 191, 36, 0.7)"
+                              strokeWidth="2"
+                              strokeDasharray="3,2"
+                              animate={{ 
+                                strokeDashoffset: [0, -10],
+                                opacity: [0.3, 1, 0.3]
+                              }}
+                              transition={{ 
+                                delay: i * 0.1, 
+                                strokeDashoffset: { duration: 1.5, repeat: Infinity, ease: "linear" },
+                                opacity: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                              }}
+                            />
+                          ))}
+                          {/* Red light penetration waves */}
+                          {[...Array(3)].map((_, i) => (
+                            <motion.ellipse
+                              key={i}
+                              cx="60"
+                              cy="55"
+                              rx={20 + i * 8}
+                              ry={15 + i * 6}
+                              fill="none"
+                              stroke="rgba(248, 113, 113, 0.5)"
+                              strokeWidth="1"
+                              animate={{ 
+                                opacity: [0, 0.8, 0],
+                                scale: [0.9, 1.2]
+                              }}
+                              transition={{ 
+                                delay: i * 0.4, 
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeOut"
+                              }}
+                            />
+                          ))}
+                        </motion.g>
+                      )}
                       
-                      {/* Muscle Areas */}
-                      <motion.ellipse
-                        cx="60"
-                        cy="90"
-                        rx="25"
-                        ry="35"
-                        fill="rgba(96, 165, 250, 0.2)"
-                        stroke="rgba(96, 165, 250, 0.6)"
-                        strokeWidth="2"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.4, duration: 0.8 }}
-                      />
+                      {/* BENEFIT 1: Improved skin texture and tone */}
+                      {getBenefitAnimationSystem(activeBenefitIndex, currentDeviceData.name) === 'skin-texture' && (
+                        <motion.g key="skin-texture">
+                          {/* Skin surface improvement */}
+                          <motion.path
+                            d="M42 38 Q60 33 78 38 Q82 52 78 66 Q60 71 42 66 Q38 52 42 38 Z"
+                            fill="rgba(251, 146, 60, 0.2)"
+                            stroke="rgba(251, 146, 60, 0.8)"
+                            strokeWidth="2"
+                            animate={{ 
+                              opacity: [0.5, 1, 0.5],
+                              scale: [1, 1.05, 1]
+                            }}
+                            transition={{ 
+                              duration: 2.5,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          />
+                          {/* Texture smoothing pattern */}
+                          {[...Array(6)].map((_, i) => (
+                            <motion.line
+                              key={i}
+                              x1={45 + i * 5}
+                              y1={42}
+                              x2={45 + i * 5}
+                              y2={62}
+                              stroke="rgba(251, 146, 60, 0.6)"
+                              strokeWidth="1"
+                              strokeDasharray="2,4"
+                              animate={{ 
+                                strokeDashoffset: [0, -12],
+                                opacity: [0.4, 1, 0.4]
+                              }}
+                              transition={{ 
+                                delay: i * 0.1, 
+                                strokeDashoffset: { duration: 1.5, repeat: Infinity, ease: "linear" },
+                                opacity: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                              }}
+                            />
+                          ))}
+                          {/* Skin tone evening effect */}
+                          {[
+                            { x: 48, y: 45, delay: 0.0 },
+                            { x: 60, y: 48, delay: 0.3 },
+                            { x: 72, y: 52, delay: 0.6 },
+                            { x: 55, y: 58, delay: 0.9 }
+                          ].map((spot, i) => (
+                            <motion.circle
+                              key={i}
+                              cx={spot.x}
+                              cy={spot.y}
+                              r="3"
+                              fill="rgba(251, 146, 60, 0.6)"
+                              animate={{ 
+                                scale: [0.8, 1.4, 0.8],
+                                opacity: [0.4, 1, 0.4]
+                              }}
+                              transition={{ 
+                                delay: spot.delay, 
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            />
+                          ))}
+                        </motion.g>
+                      )}
                       
-                      {/* Cellular/ATP Areas */}
-                      <motion.circle
-                        cx="50"
-                        cy="75"
-                        r="3"
-                        fill="rgba(251, 191, 36, 0.6)"
-                        stroke="rgba(251, 191, 36, 1)"
-                        strokeWidth="1"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.6, duration: 0.8 }}
-                      />
-                      <motion.circle
-                        cx="70"
-                        cy="80"
-                        r="3"
-                        fill="rgba(251, 191, 36, 0.6)"
-                        stroke="rgba(251, 191, 36, 1)"
-                        strokeWidth="1"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.7, duration: 0.8 }}
-                      />
-                      <motion.circle
-                        cx="60"
-                        cy="105"
-                        r="3"
-                        fill="rgba(251, 191, 36, 0.6)"
-                        stroke="rgba(251, 191, 36, 1)"
-                        strokeWidth="1"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.8, duration: 0.8 }}
-                      />
+                      {/* BENEFIT 2: Reduced fine lines and wrinkles */}
+                      {getBenefitAnimationSystem(activeBenefitIndex, currentDeviceData.name) === 'anti-aging' && (
+                        <motion.g key="anti-aging">
+                          {/* Wrinkle lines being smoothed */}
+                          {[
+                            { path: "M45 45 Q55 42 65 45", delay: 0.0 },
+                            { path: "M48 50 Q58 47 68 50", delay: 0.3 },
+                            { path: "M46 55 Q56 52 66 55", delay: 0.6 },
+                            { path: "M50 60 Q60 57 70 60", delay: 0.9 }
+                          ].map((wrinkle, i) => (
+                            <motion.g key={i}>
+                              {/* Wrinkle line - fading out */}
+                              <motion.path
+                                d={wrinkle.path}
+                                fill="none"
+                                stroke="rgba(156, 163, 175, 0.8)"
+                                strokeWidth="1.5"
+                                strokeDasharray="3,2"
+                                animate={{ 
+                                  opacity: [0.8, 0.2, 0.8],
+                                  strokeDashoffset: [0, -10]
+                                }}
+                                transition={{ 
+                                  delay: wrinkle.delay, 
+                                  opacity: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+                                  strokeDashoffset: { duration: 2, repeat: Infinity, ease: "linear" }
+                                }}
+                              />
+                              {/* Smoothing effect */}
+                              <motion.path
+                                d={wrinkle.path}
+                                fill="none"
+                                stroke="rgba(251, 191, 36, 0.9)"
+                                strokeWidth="2"
+                                strokeDasharray="1,3"
+                                animate={{ 
+                                  strokeDashoffset: [0, -8],
+                                  opacity: [0, 1, 0]
+                                }}
+                                transition={{ 
+                                  delay: wrinkle.delay + 1, 
+                                  duration: 2,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                              />
+                            </motion.g>
+                          ))}
+                          {/* Facial rejuvenation field */}
+                          <motion.ellipse
+                            cx="60"
+                            cy="52"
+                            rx="22"
+                            ry="18"
+                            fill="rgba(251, 191, 36, 0.1)"
+                            stroke="rgba(251, 191, 36, 0.6)"
+                            strokeWidth="1"
+                            strokeDasharray="4,4"
+                            animate={{ 
+                              strokeDashoffset: [0, -16],
+                              scale: [1, 1.1, 1],
+                              opacity: [0.3, 0.7, 0.3]
+                            }}
+                            transition={{ 
+                              strokeDashoffset: { duration: 3, repeat: Infinity, ease: "linear" },
+                              scale: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+                              opacity: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+                            }}
+                          />
+                        </motion.g>
+                      )}
                       
-                      {/* Joint/Recovery Areas */}
-                      <motion.circle
-                        cx="52"
-                        cy="85"
-                        r="6"
-                        fill="rgba(167, 139, 250, 0.3)"
-                        stroke="rgba(167, 139, 250, 0.8)"
-                        strokeWidth="1"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.9, duration: 0.8 }}
-                      />
-                      <motion.circle
-                        cx="68"
-                        cy="85"
-                        r="6"
-                        fill="rgba(167, 139, 250, 0.3)"
-                        stroke="rgba(167, 139, 250, 0.8)"
-                        strokeWidth="1"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 1.0, duration: 0.8 }}
-                      />
+                      {/* BENEFIT 3: Faster muscle recovery */}
+                      {getBenefitAnimationSystem(activeBenefitIndex, currentDeviceData.name) === 'muscle-recovery' && (
+                        <motion.g key="muscle-recovery">
+                          {/* Major muscle groups being restored */}
+                          <motion.ellipse
+                            cx="60"
+                            cy="90"
+                            rx="28"
+                            ry="35"
+                            fill="rgba(96, 165, 250, 0.15)"
+                            stroke="rgba(96, 165, 250, 0.7)"
+                            strokeWidth="2"
+                            strokeDasharray="8,4"
+                            animate={{ 
+                              strokeDashoffset: [0, -24],
+                              opacity: [0.6, 1, 0.6],
+                              scale: [1, 1.05, 1]
+                            }}
+                            transition={{ 
+                              strokeDashoffset: { duration: 2.5, repeat: Infinity, ease: "linear" },
+                              opacity: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+                              scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+                            }}
+                          />
+                          {/* Muscle fiber repair zones */}
+                          {[
+                            { x: 48, y: 78, delay: 0.0 },
+                            { x: 72, y: 82, delay: 0.2 },
+                            { x: 50, y: 98, delay: 0.4 },
+                            { x: 70, y: 105, delay: 0.6 },
+                            { x: 60, y: 88, delay: 0.8 },
+                            { x: 55, y: 110, delay: 1.0 }
+                          ].map((fiber, i) => (
+                            <motion.g key={i}>
+                              {/* Muscle fiber restoration */}
+                              <motion.circle
+                                cx={fiber.x}
+                                cy={fiber.y}
+                                r="3"
+                                fill="rgba(96, 165, 250, 0.8)"
+                                stroke="rgba(96, 165, 250, 1)"
+                                strokeWidth="1"
+                                animate={{ 
+                                  scale: [0.8, 1.5, 0.8],
+                                  opacity: [0.5, 1, 0.5]
+                                }}
+                                transition={{ 
+                                  delay: fiber.delay, 
+                                  duration: 2,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                              />
+                              {/* Recovery wave */}
+                              <motion.circle
+                                cx={fiber.x}
+                                cy={fiber.y}
+                                r="6"
+                                fill="none"
+                                stroke="rgba(96, 165, 250, 0.4)"
+                                strokeWidth="1"
+                                animate={{ 
+                                  scale: [1, 2.5],
+                                  opacity: [0.6, 0]
+                                }}
+                                transition={{ 
+                                  delay: fiber.delay + 0.3, 
+                                  duration: 1.5,
+                                  repeat: Infinity,
+                                  ease: "easeOut"
+                                }}
+                              />
+                            </motion.g>
+                          ))}
+                        </motion.g>
+                      )}
                     </>
                   ) : (
                     <>
-                      {/* Cryotherapy Effects */}
-                      {/* Circulatory System Enhancement */}
-                      <motion.path
-                        d="M55 25 Q60 20 65 25 Q70 35 65 45 Q60 50 55 45 Q50 35 55 25 Z"
-                        fill="rgba(6, 182, 212, 0.3)"
-                        stroke="rgba(6, 182, 212, 0.8)"
-                        strokeWidth="2"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.2, duration: 0.8 }}
-                      />
+                      {/* BENEFIT 0: Enhanced athletic performance */}
+                      {getBenefitAnimationSystem(activeBenefitIndex, currentDeviceData.name) === 'athletic-performance' && (
+                        <motion.g key="athletic-performance">
+                          {/* Athletic optimization - full body enhancement */}
+                          <motion.ellipse
+                            cx="60"
+                            cy="85"
+                            rx="35"
+                            ry="45"
+                            fill="rgba(6, 182, 212, 0.1)"
+                            stroke="rgba(6, 182, 212, 0.8)"
+                            strokeWidth="2"
+                            strokeDasharray="12,6"
+                            animate={{ 
+                              strokeDashoffset: [0, -36],
+                              scale: [1, 1.08, 1],
+                              opacity: [0.5, 1, 0.5]
+                            }}
+                            transition={{ 
+                              strokeDashoffset: { duration: 3, repeat: Infinity, ease: "linear" },
+                              scale: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+                              opacity: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+                            }}
+                          />
+                          {/* Performance enhancement zones */}
+                          {[
+                            { x: 60, y: 22, label: 'Mental Focus', delay: 0.0 },
+                            { x: 48, y: 75, label: 'Endurance', delay: 0.3 },
+                            { x: 72, y: 75, label: 'Strength', delay: 0.6 },
+                            { x: 50, y: 110, label: 'Power', delay: 0.9 },
+                            { x: 70, y: 110, label: 'Agility', delay: 1.2 }
+                          ].map((zone, i) => (
+                            <motion.g key={i}>
+                              {/* Performance boost indicator */}
+                              <motion.circle
+                                cx={zone.x}
+                                cy={zone.y}
+                                r="5"
+                                fill="rgba(6, 182, 212, 0.6)"
+                                stroke="rgba(6, 182, 212, 1)"
+                                strokeWidth="2"
+                                animate={{ 
+                                  scale: [1, 1.4, 1],
+                                  opacity: [0.6, 1, 0.6]
+                                }}
+                                transition={{ 
+                                  delay: zone.delay, 
+                                  duration: 2,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                              />
+                              {/* Performance energy waves */}
+                              <motion.circle
+                                cx={zone.x}
+                                cy={zone.y}
+                                r="10"
+                                fill="none"
+                                stroke="rgba(6, 182, 212, 0.4)"
+                                strokeWidth="1"
+                                animate={{ 
+                                  scale: [1, 2.2],
+                                  opacity: [0.6, 0]
+                                }}
+                                transition={{ 
+                                  delay: zone.delay + 0.4, 
+                                  duration: 1.8,
+                                  repeat: Infinity,
+                                  ease: "easeOut"
+                                }}
+                              />
+                            </motion.g>
+                          ))}
+                        </motion.g>
+                      )}
                       
-                      {/* Inflammation Reduction Areas */}
-                      <motion.ellipse
-                        cx="60"
-                        cy="75"
-                        rx="28"
-                        ry="25"
-                        fill="rgba(16, 185, 129, 0.2)"
-                        stroke="rgba(16, 185, 129, 0.6)"
-                        strokeWidth="2"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.4, duration: 0.8 }}
-                      />
+                      {/* BENEFIT 1: Accelerated muscle recovery */}
+                      {getBenefitAnimationSystem(activeBenefitIndex, currentDeviceData.name) === 'muscle-recovery' && (
+                        <motion.g key="muscle-recovery">
+                          {/* Major muscle groups being rapidly restored */}
+                          <motion.ellipse
+                            cx="60"
+                            cy="85"
+                            rx="32"
+                            ry="38"
+                            fill="rgba(16, 185, 129, 0.15)"
+                            stroke="rgba(16, 185, 129, 0.7)"
+                            strokeWidth="2"
+                            strokeDasharray="10,5"
+                            animate={{ 
+                              strokeDashoffset: [0, -30],
+                              scale: [1, 1.05, 1],
+                              opacity: [0.6, 0.9, 0.6]
+                            }}
+                            transition={{ 
+                              strokeDashoffset: { duration: 2, repeat: Infinity, ease: "linear" },
+                              scale: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+                              opacity: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+                            }}
+                          />
+                          {/* Accelerated recovery points */}
+                          {[
+                            { x: 45, y: 65, label: 'Arms', delay: 0.0 },
+                            { x: 75, y: 65, label: 'Shoulders', delay: 0.2 },
+                            { x: 48, y: 85, label: 'Core', delay: 0.4 },
+                            { x: 72, y: 85, label: 'Back', delay: 0.6 },
+                            { x: 50, y: 110, label: 'Legs', delay: 0.8 },
+                            { x: 70, y: 110, label: 'Glutes', delay: 1.0 }
+                          ].map((muscle, i) => (
+                            <motion.g key={i}>
+                              {/* Rapid recovery visualization */}
+                              <motion.circle
+                                cx={muscle.x}
+                                cy={muscle.y}
+                                r="4"
+                                fill="rgba(16, 185, 129, 0.8)"
+                                stroke="rgba(16, 185, 129, 1)"
+                                strokeWidth="1"
+                                animate={{ 
+                                  scale: [0.8, 1.6, 0.8],
+                                  opacity: [0.5, 1, 0.5]
+                                }}
+                                transition={{ 
+                                  delay: muscle.delay, 
+                                  duration: 1.5,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                              />
+                              {/* Recovery acceleration wave */}
+                              <motion.circle
+                                cx={muscle.x}
+                                cy={muscle.y}
+                                r="8"
+                                fill="none"
+                                stroke="rgba(16, 185, 129, 0.5)"
+                                strokeWidth="1"
+                                animate={{ 
+                                  scale: [1, 2.8],
+                                  opacity: [0.7, 0]
+                                }}
+                                transition={{ 
+                                  delay: muscle.delay + 0.2, 
+                                  duration: 1.2,
+                                  repeat: Infinity,
+                                  ease: "easeOut"
+                                }}
+                              />
+                            </motion.g>
+                          ))}
+                        </motion.g>
+                      )}
                       
-                      {/* Nervous System Response */}
-                      <motion.path
-                        d="M60 15 L58 30 L62 30 L60 15 M60 30 L55 45 L60 60 L65 45 L60 30"
-                        fill="none"
-                        stroke="rgba(139, 92, 246, 0.8)"
-                        strokeWidth="3"
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: 1 }}
-                        transition={{ delay: 0.6, duration: 1.2 }}
-                      />
+                      {/* BENEFIT 2: Natural skin rejuvenation */}
+                      {getBenefitAnimationSystem(activeBenefitIndex, currentDeviceData.name) === 'skin-rejuvenation' && (
+                        <motion.g key="skin-rejuvenation">
+                          {/* Skin revitalization field */}
+                          <motion.path
+                            d="M40 35 Q60 30 80 35 Q85 50 80 65 Q60 70 40 65 Q35 50 40 35 Z"
+                            fill="rgba(139, 92, 246, 0.2)"
+                            stroke="rgba(139, 92, 246, 0.8)"
+                            strokeWidth="2"
+                            strokeDasharray="8,4"
+                            animate={{ 
+                              strokeDashoffset: [0, -24],
+                              opacity: [0.4, 0.9, 0.4],
+                              scale: [1, 1.03, 1]
+                            }}
+                            transition={{ 
+                              strokeDashoffset: { duration: 2.5, repeat: Infinity, ease: "linear" },
+                              opacity: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+                              scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+                            }}
+                          />
+                          {/* Skin cell regeneration */}
+                          {[...Array(12)].map((_, i) => (
+                            <motion.circle
+                              key={i}
+                              cx={45 + (i % 4) * 10}
+                              cy={42 + Math.floor(i / 4) * 8}
+                              r="2"
+                              fill="rgba(139, 92, 246, 0.8)"
+                              animate={{ 
+                                scale: [0.5, 1.5, 0.5],
+                                opacity: [0.3, 1, 0.3]
+                              }}
+                              transition={{ 
+                                delay: i * 0.1, 
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            />
+                          ))}
+                          {/* Collagen stimulation waves */}
+                          {[...Array(4)].map((_, i) => (
+                            <motion.ellipse
+                              key={i}
+                              cx="60"
+                              cy="50"
+                              rx={18 + i * 6}
+                              ry={12 + i * 4}
+                              fill="none"
+                              stroke="rgba(139, 92, 246, 0.3)"
+                              strokeWidth="1"
+                              animate={{ 
+                                opacity: [0, 0.7, 0],
+                                scale: [0.9, 1.3]
+                              }}
+                              transition={{ 
+                                delay: i * 0.3, 
+                                duration: 2.5,
+                                repeat: Infinity,
+                                ease: "easeOut"
+                              }}
+                            />
+                          ))}
+                        </motion.g>
+                      )}
                       
-                      {/* Muscle Recovery Points */}
-                      <motion.circle
-                        cx="45"
-                        cy="90"
-                        r="5"
-                        fill="rgba(251, 191, 36, 0.4)"
-                        stroke="rgba(251, 191, 36, 0.8)"
-                        strokeWidth="2"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.8, duration: 0.8 }}
-                      />
-                      <motion.circle
-                        cx="75"
-                        cy="90"
-                        r="5"
-                        fill="rgba(251, 191, 36, 0.4)"
-                        stroke="rgba(251, 191, 36, 0.8)"
-                        strokeWidth="2"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 1.0, duration: 0.8 }}
-                      />
-                      <motion.circle
-                        cx="60"
-                        cy="110"
-                        r="5"
-                        fill="rgba(251, 191, 36, 0.4)"
-                        stroke="rgba(251, 191, 36, 0.8)"
-                        strokeWidth="2"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 1.2, duration: 0.8 }}
-                      />
+                      {/* BENEFIT 3: Mood elevation and stress relief */}
+                      {getBenefitAnimationSystem(activeBenefitIndex, currentDeviceData.name) === 'mood-stress' && (
+                        <motion.g key="mood-stress">
+                          {/* Brain mood enhancement */}
+                          <motion.circle
+                            cx="60"
+                            cy="22"
+                            r="18"
+                            fill="rgba(251, 191, 36, 0.15)"
+                            stroke="rgba(251, 191, 36, 0.8)"
+                            strokeWidth="2"
+                            strokeDasharray="6,4"
+                            animate={{ 
+                              strokeDashoffset: [0, -20],
+                              scale: [1, 1.12, 1],
+                              opacity: [0.6, 1, 0.6]
+                            }}
+                            transition={{ 
+                              strokeDashoffset: { duration: 3, repeat: Infinity, ease: "linear" },
+                              scale: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+                              opacity: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+                            }}
+                          />
+                          {/* Stress relief radiating from brain */}
+                          {[...Array(8)].map((_, i) => (
+                            <motion.circle
+                              key={i}
+                              cx={60 + Math.cos(i * Math.PI / 4) * 15}
+                              cy={22 + Math.sin(i * Math.PI / 4) * 15}
+                              r="2.5"
+                              fill="rgba(251, 191, 36, 0.7)"
+                              animate={{ 
+                                scale: [0, 1.5, 0],
+                                opacity: [0, 1, 0]
+                              }}
+                              transition={{ 
+                                delay: i * 0.15, 
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeOut"
+                              }}
+                            />
+                          ))}
+                          {/* Nervous system calming */}
+                          <motion.path
+                            d="M60 40 Q55 50 60 65 Q65 80 60 95 Q55 110 60 125"
+                            fill="none"
+                            stroke="rgba(251, 191, 36, 0.9)"
+                            strokeWidth="3"
+                            strokeDasharray="6,3"
+                            animate={{ 
+                              strokeDashoffset: [0, -18],
+                              opacity: [0.4, 1, 0.4]
+                            }}
+                            transition={{ 
+                              strokeDashoffset: { duration: 2, repeat: Infinity, ease: "linear" },
+                              opacity: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+                            }}
+                          />
+                          {/* Endorphin release visualization */}
+                          {[
+                            { x: 50, y: 70, delay: 0.0 },
+                            { x: 70, y: 80, delay: 0.4 },
+                            { x: 55, y: 100, delay: 0.8 },
+                            { x: 65, y: 115, delay: 1.2 }
+                          ].map((endorphin, i) => (
+                            <motion.g key={i}>
+                              <motion.circle
+                                cx={endorphin.x}
+                                cy={endorphin.y}
+                                r="3"
+                                fill="rgba(251, 191, 36, 0.8)"
+                                stroke="rgba(251, 191, 36, 1)"
+                                strokeWidth="1"
+                                animate={{ 
+                                  scale: [1, 1.6, 1],
+                                  opacity: [0.6, 1, 0.6]
+                                }}
+                                transition={{ 
+                                  delay: endorphin.delay, 
+                                  duration: 2.5,
+                                  repeat: Infinity,
+                                  ease: "easeInOut"
+                                }}
+                              />
+                              <motion.circle
+                                cx={endorphin.x}
+                                cy={endorphin.y}
+                                r="8"
+                                fill="none"
+                                stroke="rgba(251, 191, 36, 0.4)"
+                                strokeWidth="1"
+                                animate={{ 
+                                  scale: [1, 2.5],
+                                  opacity: [0.5, 0]
+                                }}
+                                transition={{ 
+                                  delay: endorphin.delay + 0.5, 
+                                  duration: 2,
+                                  repeat: Infinity,
+                                  ease: "easeOut"
+                                }}
+                              />
+                            </motion.g>
+                          ))}
+                        </motion.g>
+                      )}
                     </>
                   )}
                 </svg>
@@ -503,31 +1363,46 @@ export default function Home() {
               
               {/* Medical Benefits List */}
               <div className="flex-1 w-full md:w-auto">
-                <h5 className="text-white text-xs font-light tracking-[0.3em] uppercase mb-3 md:mb-4 opacity-80 text-center md:text-left">
+                <h5 className={`text-xs font-light tracking-[0.3em] uppercase mb-3 md:mb-4 opacity-80 text-center md:text-left transition-colors duration-1000 ${
+                  currentDevice === 0 ? 'text-cyan-300' : 
+                  currentDevice === 1 ? 'text-red-300' : 
+                  'text-teal-300'
+                }`}>
                   Medical Effects
                 </h5>
                 <div className="space-y-2 md:space-y-3">
                   {currentDeviceData.benefits.slice(0, 4).map((benefit, index) => (
                     <motion.div
                       key={index}
-                      className="flex items-start gap-3 justify-center md:justify-start"
+                      className={`flex items-start gap-3 justify-center md:justify-start transition-all duration-500 ${
+                        index === activeBenefitIndex ? 'scale-105' : 'scale-100'
+                      }`}
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.2 + index * 0.1, duration: 0.6 }}
                     >
                       <motion.div
-                        className="w-2 h-2 rounded-full bg-white/60 flex-shrink-0 mt-1.5 md:mt-2"
-                        animate={{
-                          scale: [1, 1.2, 1],
-                          opacity: [0.6, 1, 0.6]
+                        className={`w-2 h-2 rounded-full flex-shrink-0 mt-1.5 md:mt-2 transition-all duration-500 ${
+                          index === activeBenefitIndex 
+                            ? 'bg-white shadow-white shadow-lg' 
+                            : 'bg-white/40'
+                        }`}
+                        animate={index === activeBenefitIndex ? {
+                          scale: [1, 1.4, 1],
+                          opacity: [0.8, 1, 0.8],
+                          boxShadow: ['0 0 0px rgba(255,255,255,0)', '0 0 20px rgba(255,255,255,0.8)', '0 0 0px rgba(255,255,255,0)']
+                        } : {
+                          scale: 1,
+                          opacity: 0.4
                         }}
                         transition={{
                           duration: 2,
-                          repeat: Infinity,
-                          delay: index * 0.3
+                          repeat: Infinity
                         }}
                       />
-                      <span className="text-white/70 text-xs font-light leading-relaxed text-center md:text-left">
+                      <span className={`text-xs font-light leading-relaxed text-center md:text-left transition-all duration-500 ${
+                        index === activeBenefitIndex ? 'text-white' : 'text-white/50'
+                      }`}>
                         {benefit}
                       </span>
                     </motion.div>
@@ -569,9 +1444,18 @@ export default function Home() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h4 className="text-white text-sm font-light tracking-[0.4em] uppercase mb-8 md:mb-16 text-center md:text-left">
-              Specs
-            </h4>
+            <motion.h4 
+              className={`text-sm font-light tracking-[0.4em] uppercase mb-8 md:mb-16 text-center md:text-left font-mono transition-colors duration-1000 ${
+                currentDevice === 0 ? 'text-cyan-300' : 
+                currentDevice === 1 ? 'text-red-300' : 
+                'text-teal-300'
+              }`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              SPECS
+            </motion.h4>
             
             <div className="relative">
               {/* Connecting Line - Hidden on mobile or adjusted */}
@@ -630,7 +1514,11 @@ export default function Home() {
                     <div className="flex-1">
                       <motion.div 
                         className={`text-xs md:text-sm font-light leading-relaxed mb-1 transition-all duration-500 ${
-                          index <= activeSpecIndex ? 'text-white' : 'text-white/40'
+                          index <= activeSpecIndex ? (
+                            currentDevice === 0 ? 'text-blue-200' : 
+                            currentDevice === 1 ? 'text-orange-200' : 
+                            'text-teal-200'
+                          ) : 'text-white/40'
                         }`}
                         animate={{
                           opacity: index <= activeSpecIndex ? 1 : 0.4,
@@ -660,17 +1548,36 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Bottom - Explore Button */}
+      {/* Bottom - Enhanced Explore Button */}
       <div className="fixed bottom-20 md:bottom-32 left-1/2 transform -translate-x-1/2 z-50">
         <motion.button
-          className="border border-white/30 text-white px-6 md:px-8 py-2 md:py-3 text-xs font-light tracking-[0.3em] uppercase hover:bg-white hover:text-[#2a3142] transition-all duration-300"
+          className={`relative px-8 md:px-12 py-3 md:py-4 text-xs font-light tracking-[0.3em] uppercase transition-all duration-1000 backdrop-blur-sm bg-black/10 font-mono overflow-hidden group ${
+            currentDevice === 0 ? 'border border-cyan-400/60 text-cyan-200 hover:bg-cyan-400 hover:text-slate-900' : 
+            currentDevice === 1 ? 'border border-red-400/60 text-red-200 hover:bg-red-400 hover:text-slate-900' : 
+            'border border-teal-400/60 text-teal-200 hover:bg-teal-400 hover:text-slate-900'
+          }`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          Explore
+          {/* Animated background on hover */}
+          <motion.div
+            className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-colors duration-1000 ${
+              currentDevice === 0 ? 'bg-cyan-400' : 
+              currentDevice === 1 ? 'bg-red-400' : 
+              'bg-teal-400'
+            }`}
+            initial={{ scaleX: 0 }}
+            whileHover={{ scaleX: 1 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            style={{ originX: 0 }}
+          />
+          <span className="relative z-10">EXPLORE</span>
+          
+          {/* Subtle glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </motion.button>
       </div>
 

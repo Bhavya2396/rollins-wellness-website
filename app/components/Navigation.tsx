@@ -19,7 +19,7 @@ const Navigation = () => {
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.2 }}
         >
-          ROLLINS
+          ROLLINS WELLNESS
         </motion.div>
 
         {/* Navigation Links - Ferrari Style */}

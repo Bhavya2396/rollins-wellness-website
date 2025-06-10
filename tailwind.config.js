@@ -49,6 +49,8 @@ module.exports = {
       fontFamily: {
         luxury: ['Inter', 'system-ui', 'sans-serif'],
         display: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['ui-monospace', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'monospace'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',
@@ -57,6 +59,9 @@ module.exports = {
         'fade-in-up': 'fade-in-up 0.8s ease-out',
         'slide-in-left': 'slide-in-left 0.8s ease-out',
         'slide-in-right': 'slide-in-right 0.8s ease-out',
+        'gradient-x': 'gradient-x 3s ease infinite',
+        'gradient-xy': 'gradient-xy 6s ease infinite',
+        'shimmer': 'shimmer 2s linear infinite',
       },
       keyframes: {
         float: {
@@ -83,11 +88,26 @@ module.exports = {
           '0%': { opacity: '0', transform: 'translateX(50px)' },
           '100%': { opacity: '1', transform: 'translateX(0)' },
         },
+        'gradient-x': {
+          '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' },
+          '50%': { 'background-size': '200% 200%', 'background-position': 'right center' },
+        },
+        'gradient-xy': {
+          '0%, 100%': { 'background-size': '400% 400%', 'background-position': 'left center' },
+          '50%': { 'background-size': '400% 400%', 'background-position': 'right center' },
+        },
+        'shimmer': {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
         'luxury-gradient': 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)',
+        'mclaren-gradient': 'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%)',
+        'sophisticated-gradient': 'linear-gradient(to bottom right, #0f172a, #1e293b, #334155)',
+        'premium-radial': 'radial-gradient(ellipse at center, #1e293b 0%, #0f172a 70%)',
       },
       backdropBlur: {
         'xs': '2px',

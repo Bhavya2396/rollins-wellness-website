@@ -118,7 +118,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
             <span className="text-luxury-900 font-bold text-xs">R</span>
           </div>
           <div>
-            <p className="text-gold-500 font-semibold text-sm">ROLLINS INTERNATIONAL</p>
+            <p className="text-gold-500 font-semibold text-sm">ROLLINS WELLNESS</p>
             <p className="text-gray-400 text-xs">Wellness Technology Pioneer</p>
           </div>
         </div>
