@@ -12,7 +12,22 @@ interface ScrollData {
   direction: number;
 }
 
+// Browser detection utility
+const isSafari = () => {
+  if (typeof window === 'undefined') return false;
+  return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+};
 
+const isWebGLAvailable = () => {
+  if (typeof window === 'undefined') return false;
+  try {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    return !!(context && typeof (context as WebGLRenderingContext).getExtension === 'function');
+  } catch (e) {
+    return false;
+  }
+};
 
 interface MedicalDeviceModelProps {
   url: string;
@@ -22,7 +37,7 @@ interface MedicalDeviceModelProps {
   deviceName: string;
 }
 
-// Enhanced 3D Model with Cinematic Movements
+// Enhanced 3D Model with Safari Compatibility
 const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({ 
   url, 
   scale = 0.5,
@@ -30,9 +45,17 @@ const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
   scrollData,
   deviceName
 }) => {
-  const gltf = useGLTF(url);
-  const meshRef = useRef<THREE.Group>(null);
   const [modelError, setModelError] = useState(false);
+  const meshRef = useRef<THREE.Group>(null);
+
+  // Use useGLTF with error handling
+  let gltf: any;
+  try {
+    gltf = useGLTF(url);
+  } catch (error) {
+    console.warn(`Failed to load 3D model: ${url}`, error);
+    setModelError(true);
+  }
 
   // Camera animation based on scroll with enhanced stages
   const cameraStages = useMemo(() => {
@@ -96,32 +119,8 @@ const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
     }
   }, [scrollData.progress, scale]);
 
-  // Error handling for model loading
-  useEffect(() => {
-    const handleError = () => {
-      console.warn(`Failed to load 3D model: ${url}`);
-      setModelError(true);
-    };
-    
-    // Listen for loading errors
-    if (gltf.scene) {
-      gltf.scene.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          child.onBeforeRender = () => {
-            // Model loaded successfully
-            setModelError(false);
-          };
-        }
-      });
-    }
-    
-    return () => {
-      // Cleanup
-    };
-  }, [gltf, url]);
-
-  // If model failed to load, return a simple placeholder
-  if (modelError) {
+  // If model failed to load, return a placeholder
+  if (modelError || !gltf?.scene) {
     return (
       <mesh ref={meshRef} position={position} scale={cameraStages.scale}>
         <boxGeometry args={[2, 1, 1]} />
@@ -138,9 +137,43 @@ const MedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
         scale={cameraStages.scale}
         rotation={cameraStages.rotation}
       />
-      
-
     </group>
+  );
+};
+
+// Safari-optimized Lighting System
+const SafariLighting: React.FC<{ scrollData: ScrollData }> = ({ scrollData }) => {
+  return (
+    <>
+      {/* Simplified environment for Safari */}
+      <Environment background={false}>
+        <mesh scale={100}>
+          <sphereGeometry args={[1, 32, 32]} />
+          <meshBasicMaterial color="#1e293b" side={THREE.BackSide} />
+        </mesh>
+      </Environment>
+      
+      {/* Simplified directional light */}
+      <directionalLight
+        position={[5, 8, 5]}
+        color="#ffffff"
+        intensity={0.5}
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+      />
+      
+      {/* Minimal ambient lighting */}
+      <ambientLight intensity={0.4} color="#f8fafc" />
+      
+      {/* Single accent light */}
+      <pointLight 
+        position={[10, 6, 10]} 
+        intensity={0.2}
+        color="#4f46e5" 
+        distance={30}
+      />
+    </>
   );
 };
 
@@ -225,15 +258,18 @@ const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
   scrollProgress = 0
 }) => {
   const [scrollData, setScrollData] = useState<ScrollData>({ progress: scrollProgress, velocity: 0, direction: 1 });
-
   const [isModelLoaded, setIsModelLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [webGLSupported, setWebGLSupported] = useState(true);
+  const [browserIsSafari, setBrowserIsSafari] = useState(false);
   const lastScrollY = useRef(0);
 
   // Client-side mounting check
   useEffect(() => {
     setIsMounted(true);
+    setWebGLSupported(isWebGLAvailable());
+    setBrowserIsSafari(isSafari());
   }, []);
 
   // Responsive hook to handle mobile detection
@@ -257,8 +293,8 @@ const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
     }));
   }, [scrollProgress]);
 
-  // Show fallback image while mounting or if no model URL
-  if (!isMounted || !modelUrl) {
+  // Show fallback image if WebGL is not supported or while mounting
+  if (!isMounted || !webGLSupported || !modelUrl) {
     return (
       <div className="absolute inset-0 flex items-center justify-center">
         <motion.img 
@@ -298,6 +334,7 @@ const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
           />
         </div>
       )}
+      
       <Canvas
         camera={{ 
           position: [0, 0, 4.5],
@@ -305,22 +342,34 @@ const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
           near: 0.1,
           far: 100
         }}
-        shadows={!isMobile} // Disable shadows on mobile completely
+        shadows={!isMobile && !browserIsSafari} // Disable shadows on mobile and Safari
         gl={{ 
-          antialias: !isMobile, // Disable antialiasing on mobile for performance
+          antialias: !isMobile && !browserIsSafari, // Disable antialiasing on mobile and Safari
           alpha: true,
-          powerPreference: isMobile ? "default" : "high-performance",
-          toneMapping: THREE.ACESFilmicToneMapping,
+          powerPreference: (isMobile || browserIsSafari) ? "default" : "high-performance",
+          preserveDrawingBuffer: browserIsSafari, // Important for Safari
+          failIfMajorPerformanceCaveat: false, // Allow Safari to use software rendering if needed
+          toneMapping: browserIsSafari ? THREE.LinearToneMapping : THREE.ACESFilmicToneMapping,
           toneMappingExposure: 0.6
         }}
-        dpr={isMobile ? 1 : [1, 2]} // Fixed DPR on mobile
+        dpr={(isMobile || browserIsSafari) ? 1 : [1, 2]} // Fixed DPR on mobile and Safari
         style={{ background: 'transparent' }}
         onCreated={(state) => {
           state.gl.setClearColor(0x000000, 0);
-          if (!isMobile) {
+          if (!isMobile && !browserIsSafari) {
             state.gl.shadowMap.enabled = true;
             state.gl.shadowMap.type = THREE.PCFSoftShadowMap;
           }
+          // Safari-specific optimizations
+          if (browserIsSafari) {
+            const gl = state.gl.getContext() as WebGLRenderingContext;
+            gl.disable(gl.DEPTH_TEST);
+            gl.enable(gl.DEPTH_TEST);
+          }
+        }}
+        onError={(error) => {
+          console.warn('WebGL Error:', error);
+          setIsModelLoaded(false);
         }}
       >
         <Suspense fallback={
@@ -334,31 +383,28 @@ const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
             />
           </mesh>
         }>
-          {/* Simplified lighting on mobile */}
-          {isMobile ? (
-            <>
-              <ambientLight intensity={0.4} />
-              <directionalLight position={[10, 10, 5]} intensity={0.5} />
-            </>
+          {/* Conditional lighting based on browser and device */}
+          {(isMobile || browserIsSafari) ? (
+            <SafariLighting scrollData={scrollData} />
           ) : (
             <PremiumLighting scrollData={scrollData} />
           )}
           
-          {/* Medical Device Model with mobile optimization */}
+          {/* Medical Device Model with mobile and Safari optimization */}
           <MedicalDeviceModel 
             url={modelUrl}
             scale={
-              isMobile 
-                ? (deviceName.includes('Hyperbaric') ? 0.8 : deviceName.includes('CRYO') ? 0.9 : 1.0) // Even smaller on mobile
+              (isMobile || browserIsSafari)
+                ? (deviceName.includes('Hyperbaric') ? 0.8 : deviceName.includes('CRYO') ? 0.9 : 1.0)
                 : (deviceName.includes('Hyperbaric') ? 1.3 : deviceName.includes('CRYO') ? 1.4 : 1.5)
             }
-            position={[0, isMobile ? -0.1 : -0.3, 0]}
+            position={[0, (isMobile || browserIsSafari) ? -0.1 : -0.3, 0]}
             scrollData={scrollData}
             deviceName={deviceName}
           />
           
-          {/* Simplified shadows on mobile */}
-          {!isMobile && (
+          {/* Simplified shadows on mobile and Safari */}
+          {!isMobile && !browserIsSafari && (
             <ContactShadows 
               position={[0, -3, 0]} 
               opacity={0.6} 
@@ -370,26 +416,36 @@ const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
             />
           )}
           
-          {/* Environment with mobile fallback */}
-          <Environment preset={isMobile ? "city" : "studio"} background={false} />
+          {/* Environment with Safari fallback */}
+          <Environment 
+            preset={(isMobile || browserIsSafari) ? "city" : "studio"} 
+            background={false} 
+            environmentIntensity={browserIsSafari ? 0.5 : 1.0}
+          />
           
         </Suspense>
       </Canvas>
       
-      {/* Loading indicator */}
+      {/* Loading indicator with browser-specific messaging */}
       {!isModelLoaded && (
         <motion.div
           className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center"
           initial={{ opacity: 1 }}
           animate={{ opacity: 0 }}
-          transition={{ delay: isMobile ? 3 : 2, duration: 1 }} // Longer delay on mobile
+          transition={{ delay: (isMobile || browserIsSafari) ? 4 : 2, duration: 1 }}
           onAnimationComplete={() => setIsModelLoaded(true)}
         >
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 md:h-12 md:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
             <p className="text-white text-xs md:text-sm">
-              {isMobile ? 'Loading 3D Model...' : 'Loading 3D Model...'}
+              {browserIsSafari ? 'Optimizing for Safari...' : 
+               isMobile ? 'Loading 3D Model...' : 'Loading 3D Model...'}
             </p>
+            {!webGLSupported && (
+              <p className="text-yellow-400 text-xs mt-2">
+                WebGL not supported - showing fallback
+              </p>
+            )}
           </div>
         </motion.div>
       )}
