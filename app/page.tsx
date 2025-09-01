@@ -3,6 +3,8 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValue } from 'framer-motion';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 // Dynamic imports to prevent SSR issues
 const MedicalDevice3D = dynamic(() => import('./components/MedicalDevice3D'), { 
@@ -89,15 +91,316 @@ const devices = [
       { name: 'Smart Technology', value: 'Wi-Fi connectivity for remote assistance', trigger: 0.7 },
       { name: 'Safety Monitoring', value: 'Built-in oxygen & temperature sensors', trigger: 0.85 }
     ]
+  },
+  {
+    id: 'oligoscan',
+    name: 'OLIGOSCAN',
+    model: 'MINERAL & METAL ANALYSIS',
+    description: 'Real-time spectrophotometry-based assessment of minerals, trace elements, and heavy metals. Non-invasive and immediate results for intracellular insight.',
+    rating: 4.9,
+    modelPath: 'https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/The%20Oligoscan%201.glb',
+    fallbackImage: '/images/device-placeholder.svg',
+    benefits: [
+      'Instant mineral analysis',
+      'Detects deficiencies and toxic metals',
+      'Customized healthcare optimization',
+      'Adaptable, patient-specific assessments'
+    ],
+    specs: [
+      { name: 'Simple Use', value: 'Portable spectrometer connected to a computer', trigger: 0.1 },
+      { name: 'Rapid Results', value: 'Evaluates oxidative stress, minerals, metals', trigger: 0.25 },
+      { name: 'Certified Technology', value: 'Spectroscopy-based analysis', trigger: 0.4 },
+      { name: 'Non-invasive', value: 'Measurement taken in situ at office', trigger: 0.55 }
+    ]
+  },
+  {
+    id: 'avacen',
+    name: 'AVACEN',
+    model: 'THERAPY SYSTEM',
+    description: 'Compact therapy system designed to improve circulation, reduce inflammation, and promote natural healing through safe heat therapy to hands and feet.',
+    rating: 4.7,
+    modelPath: 'https://4zlf2zwvce3dyi4q.public.blob.vercel-storage.com/GLB%20FILES%20FOLDER%20/Avacen.glb',
+    fallbackImage: '/images/device-placeholder.svg',
+    benefits: [
+      'Reduces pain and inflammation',
+      'Improves microcirculation',
+      'Supports joint and muscle health',
+      'Promotes relaxation and stress relief',
+      'Non-invasive and drug-free solution'
+    ],
+    specs: [
+      { name: 'Dimensions', value: '16" L × 8" W × 10" H', trigger: 0.1 },
+      { name: 'Connectivity', value: 'Wi-Fi, RFID, Bluetooth support', trigger: 0.25 },
+      { name: 'Application', value: 'Hand and foot therapy device', trigger: 0.4 },
+      { name: 'Design', value: 'Portable, compact design', trigger: 0.55 }
+    ]
+  },
+  {
+    id: 'hbot15ata',
+    name: 'HBOT 1.5ATA',
+    model: 'HYPERBARIC CHAMBER',
+    description: 'Safe, innovative hyperbaric oxygen therapy at 1.5 ATA to increase oxygen concentration in the bloodstream and accelerate natural healing.',
+    rating: 4.8,
+    modelPath: 'https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/Rollins%20-%20wellness%20-%20/HBOT%201.5ATA%20%282%29.glb',
+    fallbackImage: '/images/device-placeholder.svg',
+    benefits: [
+      'Improves brain function & metabolism',
+      'Increases tissue oxygenation',
+      'Reduces inflammation & swelling',
+      'Enhances wound healing',
+      'Supports faster athletic recovery'
+    ],
+    specs: [
+      { name: 'Internal Volume', value: '1.4㎥', trigger: 0.1 },
+      { name: 'Pressure', value: '50kpa (1.5 ATA)', trigger: 0.25 },
+      { name: 'Dimensions', value: '82" L × 28" W × 51" H', trigger: 0.4 },
+      { name: 'Features', value: 'Touchscreen, remote, LED lighting, intercom, entertainment, humidity & temperature monitoring, safety valves', trigger: 0.55 }
+    ]
   }
-];
+  ,
+  {
+    id: 'ubody-collagen-bed-2',
+    name: 'UBODY COLLAGEN BED',
+    model: '2.0',
+    description: 'The UBody Collagen Bed 2.0 is a light therapy system designed to rejuvenate the skin using clinically tested red and near-infrared wavelengths. By stimulating collagen and elastin production, it helps reduce fine lines, improve skin elasticity, and enhance hydration. This bed combines advanced LED technology with ergonomic comfort, making it suitable for spas, wellness centers, and beauty clinics. With pre-set treatment modes, users enjoy a comfortable, effective experience designed to promote both beauty and wellness.',
+    rating: 4.8,
+    modelPath: '/models/UBody-Collagen-Bed-2.glb',
+    fallbackImage: '/images/device-placeholder.svg',
+    benefits: [
+      'Boosts collagen production',
+      'Improves skin elasticity and tone',
+      'Reduces wrinkles and fine lines',
+      'Supports skin hydration',
+      'Promotes relaxation'
+    ],
+    specs: [
+      { name: 'LED wavelengths', value: 'Red & Near-infrared', trigger: 0.1 },
+      { name: 'Design', value: 'Full-body treatment bed', trigger: 0.35 },
+      { name: 'Programs', value: 'Adjustable session programs', trigger: 0.6 },
+      { name: 'Output', value: 'Clinical-grade light output', trigger: 0.8 }
+          ]
+    },
+    {
+      id: 'cryo-penguin',
+      name: 'CRYO PENGUIN',
+      model: 'LOCALIZED CRYOTHERAPY',
+      description: 'The CRYO Penguin is designed to deliver the safest and most effective localized cryotherapy treatments in the industry. With its ergonomic design, pre-programmed protocols and built-in safety features, the device exceeds the highest standards. With pinpoint accuracy and power to handle everything from body appearance to relaxation after sport activity, the °CRYO Penguin™ is the most flexible cryotherapy machine on the market.',
+      rating: 4.8,
+      modelPath: '/models/Cryo-Penguin.glb',
+      fallbackImage: '/images/device-placeholder.svg',
+      benefits: [
+        'Smart touch screen interface',
+        'Ergonomic handle nozzle with quick access buttons',
+        'Sensors that automatically measure skin temperature ensuring safety',
+        'Indication signaling between nozzle and skin for ease of use',
+        'Precise targeting of treatment area',
+        'Mobile nitrogen vessel',
+        'Auxiliary arm with hood supporting cryogenic hose for comfort'
+      ],
+      specs: [
+        { name: 'Power Supply', value: 'Universal 110 / 230 V, 50/60 Hz', trigger: 0.1 },
+        { name: 'Cooling Medium', value: 'Liquid Nitrogen', trigger: 0.35 },
+        { name: 'Vessel Capacity', value: '50 Liter', trigger: 0.6 },
+        { name: 'Temperature', value: '-160°C vapors', trigger: 0.8 }
+      ]
+    },
+    {
+      id: 'theralas-laser',
+      name: 'THERALAS CLASS 4',
+      model: 'THERAPEUTIC LASER',
+      description: 'The TheraLAS Class 4 Laser is a cutting-edge therapeutic laser system for deep tissue therapy. With its medical-grade wavelengths, it penetrates deeply to accelerate healing, relieve pain, and improve mobility. Ideal for rehabilitation and physiotherapy centers, this laser combines portability with high clinical performance.',
+      rating: 4.9,
+      modelPath: '/models/Theralas-Laser.glb',
+      fallbackImage: '/images/device-placeholder.svg',
+      benefits: [
+        'Reduces chronic pain and inflammation',
+        'Accelerates tissue regeneration',
+        'Improves flexibility and mobility',
+        'Enhances recovery'
+      ],
+      specs: [
+        { name: 'Technology', value: 'Class 4 laser technology', trigger: 0.1 },
+        { name: 'Wavelength', value: 'Adjustable wavelength settings', trigger: 0.35 },
+        { name: 'Controls', value: 'Touchscreen controls', trigger: 0.6 },
+        { name: 'Design', value: 'Portable and lightweight design', trigger: 0.8 }
+      ]
+    },
+    {
+      id: 'ubody-300-pro-2',
+      name: 'UBODY 300 PRO 2.0',
+      model: 'WELLNESS POD',
+      description: 'The Ubody 300 Pro 2.0 wellness pod is a multi-modality system combining light therapy, detoxification, and rejuvenation technologies. It supports skin regeneration, circulation, and wellness with a relaxing, spa-like experience. This pod is designed for professional use in clinics and spas, offering customizable treatment programs to cater to diverse client needs.',
+      rating: 4.7,
+      modelPath: '/models/UBody-300-Pro-2.glb',
+      fallbackImage: '/images/device-placeholder.svg',
+      benefits: [
+        'Stimulates collagen and elastin production',
+        'Enhances circulation and recovery',
+        'Supports detoxification',
+        'Promotes relaxation and wellness'
+      ],
+      specs: [
+        { name: 'Design', value: 'Pod-style with LED spectrum therapy', trigger: 0.1 },
+        { name: 'Controls', value: 'Touchscreen control panel', trigger: 0.35 },
+        { name: 'Modes', value: 'Multi-program therapy modes', trigger: 0.6 },
+        { name: 'Build', value: 'Compact & ergonomic build', trigger: 0.8 }
+      ]
+    },
+    {
+      id: 'ubody-900-pro-2',
+      name: 'UBODY 900 PRO 2.0',
+      model: 'ADVANCED WELLNESS POD',
+      description: 'The Ubody 900 Pro 2.0 is an advanced wellness pod designed for comprehensive skin and body rejuvenation. It integrates full-spectrum light and infrared therapy for enhanced anti-aging, slimming, and recovery results. Engineered for both luxury wellness centers and performance clinics, it combines advanced control features with ergonomic comfort for maximum effectiveness.',
+      rating: 4.8,
+      modelPath: '/models/UBody-900-Pro-2.glb',
+      fallbackImage: '/images/device-placeholder.svg',
+      benefits: [
+        'Deep skin rejuvenation'
+      ],
+      specs: [
+        { name: 'Therapy Modes', value: 'Full-spectrum light + infrared', trigger: 0.15 },
+        { name: 'Design', value: 'Ergonomic pod enclosure', trigger: 0.45 },
+        { name: 'Use Case', value: 'Anti-aging, slimming, and recovery', trigger: 0.7 }
+      ]
+    },
+    {
+      id: 'total-wellness-capsule',
+      name: 'TOTAL WELLNESS CAPSULE',
+      model: 'MULTI-THERAPY POD',
+      description: 'The Total Wellness Capsule integrates multiple therapies—infrared heat, vibration, detoxification, and LED light therapy—into one enclosed pod. It delivers a relaxing full-body wellness experience while stimulating circulation, detoxification, and weight management. Popular in spas and wellness centers for its holistic approach.',
+      rating: 4.8,
+      modelPath: '/models/Total-Wellness-Capsule.glb',
+      fallbackImage: '/images/device-placeholder.svg',
+      benefits: [
+        'Promotes detoxification',
+        'Enhances weight loss and inch reduction',
+        'Improves circulation',
+        'Relieves stress and boosts relaxation'
+      ],
+      specs: [
+        { name: 'Design', value: 'Pod-style capsule', trigger: 0.1 },
+        { name: 'Therapies', value: 'Infrared + LED + vibration therapy', trigger: 0.35 },
+        { name: 'Programs', value: 'Multi-program settings', trigger: 0.6 },
+        { name: 'Controls', value: 'Touchscreen control panel', trigger: 0.8 }
+      ]
+    },
+    {
+      id: 'pemf-negative-ion-pod',
+      name: 'PEMF + NEGATIVE ION POD',
+      model: 'CELLULAR WELLNESS POD',
+      description: 'This wellness pod combines Pulsed Electromagnetic Field (PEMF) therapy with negative ion technology to support cellular repair and overall wellness. PEMF stimulates energy production in cells, while negative ions enhance detoxification and vitality.',
+      rating: 4.7,
+      modelPath: '/models/PEMF-Negative-Ion-Pod.glb',
+      fallbackImage: '/images/device-placeholder.svg',
+      benefits: [
+        'Boosts cell repair and energy production',
+        'Reduces stress and fatigue',
+        'Supports detoxification',
+        'Enhances overall vitality'
+      ],
+      specs: [
+        { name: 'PEMF', value: 'Integrated PEMF coils', trigger: 0.1 },
+        { name: 'Negative Ions', value: 'Negative ion emitters', trigger: 0.35 },
+        { name: 'Design', value: 'Pod-style enclosure', trigger: 0.6 },
+        { name: 'Intensity', value: 'Adjustable intensity levels', trigger: 0.8 }
+      ]
+    },
+    {
+      id: 'ubody-ems-kegel-chair',
+      name: 'UBODY EMS KEGEL CHAIR',
+      model: 'PELVIC FLOOR THERAPY',
+      description: 'The Ubody EMS Kegel Chair provides non-invasive pelvic floor therapy using high-intensity focused EMS technology. By inducing powerful muscle contractions, it strengthens pelvic floor muscles and supports intimate wellness. Designed for comfort and privacy, it offers effective results without downtime or invasive procedures.',
+      rating: 4.8,
+      modelPath: '/models/Ubody-EMS-Kegel-Chair.glb',
+      fallbackImage: '/images/device-placeholder.svg',
+      benefits: [
+        'Strengthens pelvic floor muscles',
+        'Treats urinary incontinence',
+        'Enhances intimate health',
+        'Non-invasive & safe'
+      ],
+      specs: [
+        { name: 'System', value: 'Chair-based EMS treatment', trigger: 0.1 },
+        { name: 'Programs', value: 'Adjustable treatment programs', trigger: 0.35 },
+        { name: 'Interface', value: 'Touchscreen interface', trigger: 0.6 },
+        { name: 'Ergonomics', value: 'Ergonomic seating design', trigger: 0.8 }
+      ]
+    },
+    {
+      id: 'ubody-far-infrared-sauna',
+      name: 'UBODY FAR INFRARED SAUNA',
+      model: 'DETOX SAUNA',
+      description: 'The Ubody Far Infrared Sauna is a modern detox solution that uses far-infrared heat to deeply penetrate tissues. Unlike traditional saunas, it promotes sweating at lower, more comfortable temperatures, making it ideal for relaxation and detoxification.',
+      rating: 4.8,
+      modelPath: '/models/Ubody-Far-Infrared-Sauna.glb',
+      fallbackImage: '/images/device-placeholder.svg',
+      benefits: [
+        'Supports detoxification and weight management',
+        'Improves circulation',
+        'Relieves stress and promotes relaxation',
+        'Enhances skin tone and clarity'
+      ],
+      specs: [
+        { name: 'Heating', value: 'Far-infrared heating panels', trigger: 0.1 },
+        { name: 'Design', value: 'Pod or cabin-style design', trigger: 0.35 },
+        { name: 'Controls', value: 'Adjustable heat levels', trigger: 0.6 },
+        { name: 'Options', value: 'Optional entertainment integration', trigger: 0.8 }
+      ]
+    },
+    {
+      id: 'electrical-cryo-chamber',
+      name: 'ELECTRICAL CRYOTHERAPY CHAMBER',
+      model: 'WHOLE BODY CRYO',
+      description: 'This electrical cryotherapy chamber offers whole-body treatments without the use of nitrogen. By maintaining safe, breathable air, it ensures maximum safety and comfort for clients. It is ideal for athletes, recovery centers, and wellness clinics seeking a safe, sustainable cryotherapy solution.',
+      rating: 4.8,
+      modelPath: '/models/Electrical-Cryo-Chamber.glb',
+      fallbackImage: '/images/device-placeholder.svg',
+      benefits: [
+        'Accelerates muscle recovery',
+        'Reduces inflammation and pain',
+        'Improves energy and performance',
+        'Enhances skin rejuvenation'
+      ],
+      specs: [
+        { name: 'System', value: 'Electrical cooling system', trigger: 0.1 },
+        { name: 'Temperature', value: '-110°C to -140°C', trigger: 0.35 },
+        { name: 'Safety', value: 'Safe air-only system', trigger: 0.6 },
+        { name: 'Interface', value: 'Touchscreen interface', trigger: 0.8 }
+      ]
+    },
+    {
+      id: 'cryoems',
+      name: 'CRYOEMS',
+      model: '2-IN-1 CRYO + EMS',
+      description: 'CryoEMS offers an unparalleled 2-in-1 advantage: cryolipolysis and electrical muscle stimulation combined in one device. This combination reduces fat, improves complexion, and tightens tissue. With cold handpieces, it also enables facial treatments and delivers a complete wellness package.',
+      rating: 4.8,
+      modelPath: '/models/CryoEMS.glb',
+      fallbackImage: '/images/device-placeholder.svg',
+      benefits: [
+        'Unique combination – three technologies in one device',
+        'Simultaneous application on up to 8 body areas',
+        'Pain-free application with security software',
+        'Additional skin improvement by LED',
+        'Studio-ready design'
+      ],
+      specs: [
+        { name: 'Power cord length', value: '200cm', trigger: 0.1 },
+        { name: 'Housing material', value: 'Acrylic glass', trigger: 0.35 },
+        { name: 'Care product', value: 'Polishing paste for cryo plates', trigger: 0.6 },
+        { name: 'Power', value: '230V / 10A / 50Hz', trigger: 0.8 }
+      ]
+    }
+  ];
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentDevice, setCurrentDevice] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeSpecIndex, setActiveSpecIndex] = useState(0);
   const [activeBenefitIndex, setActiveBenefitIndex] = useState(0);
+  const [showProductDrawer, setShowProductDrawer] = useState(false);
+  const router = useRouter();
   
   const { scrollYProgress } = useScroll();
   
@@ -180,7 +483,42 @@ export default function Home() {
     }
   };
 
+  // Pagination logic for carousel
+  const productsPerPage = 3;
+  const totalPages = Math.ceil(devices.length / productsPerPage);
+  const startIndex = currentPage * productsPerPage;
+  const endIndex = startIndex + productsPerPage;
+  const currentProducts = devices.slice(startIndex, endIndex);
+
+  const nextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages - 1));
+  };
+
+  const prevPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 0));
+  };
+
   const currentDeviceData = devices[currentDevice];
+
+  const productRoutes: Record<string, string> = {
+    hyperbaric: '/hyperbaric',
+    collagen: '/ubody-collagen',
+    cryotherapy: '/cryo-arctic',
+    oligoscan: '/oligoscan',
+    avacen: '/avacen',
+    hbot15ata: '/hbot-15ata',
+    'ubody-collagen-bed-2': '/ubody-collagen-bed-2',
+    'cryo-penguin': '/cryo-penguin',
+    'theralas-laser': '/theralas-laser',
+    'ubody-300-pro-2': '/ubody-300-pro-2',
+    'ubody-900-pro-2': '/ubody-900-pro-2',
+    'total-wellness-capsule': '/total-wellness-capsule',
+    'pemf-negative-ion-pod': '/pemf-negative-ion-pod',
+    'ubody-ems-kegel-chair': '/ubody-ems-kegel-chair',
+    'ubody-far-infrared-sauna': '/ubody-far-infrared-sauna',
+    'electrical-cryo-chamber': '/electrical-cryo-chamber',
+    'cryoems': '/cryoems'
+  };
 
   // Map benefits to anatomical systems for targeted animations - BENEFIT-SPECIFIC
   const getBenefitAnimationSystem = (benefitIndex: number, deviceName: string) => {
@@ -197,6 +535,12 @@ export default function Home() {
       const systems = ['athletic-performance', 'muscle-recovery', 'skin-rejuvenation', 'mood-stress'];
       return systems[benefitIndex] || 'athletic-performance';
     }
+  };
+
+  const goToDevicePage = () => {
+    const device = devices[currentDevice];
+    const path = productRoutes[device.id] || '/';
+    router.push(path);
   };
 
   if (isLoading) {
@@ -217,6 +561,39 @@ export default function Home() {
       animate={{ opacity: 1 }}
       transition={{ duration: 1.5, ease: "easeOut" }}
     >
+      {/* Enhanced Navigation - Aligned with content */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-slate-900/90 via-slate-900/70 to-transparent backdrop-blur-sm border-b border-white/10">
+        <div className="flex justify-between items-center px-4 md:px-8 lg:px-12 py-4 md:py-6">
+          {/* Left - Brand */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <h1 className="text-lg md:text-xl font-bold tracking-[0.2em] uppercase text-white hover:text-cyan-200 transition-all duration-300 cursor-pointer">
+              ROLLINS WELLNESS
+            </h1>
+          </motion.div>
+          
+          {/* Right - Navigation */}
+          <motion.div 
+            className="flex items-center gap-8 md:gap-12"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <a href="#gallery" className="text-white/80 hover:text-cyan-200 text-sm md:text-base tracking-[0.1em] uppercase font-medium transition-all duration-300 hover:scale-105">
+              Gallery
+            </a>
+            <a href="#about" className="text-white/80 hover:text-cyan-200 text-sm md:text-base tracking-[0.1em] uppercase font-medium transition-all duration-300 hover:scale-105">
+              About
+            </a>
+            <a href="#contact" className="text-white/80 hover:text-cyan-200 text-sm md:text-base tracking-[0.1em] uppercase font-medium transition-all duration-300 hover:scale-105">
+              Contact
+            </a>
+          </motion.div>
+        </div>
+      </nav>
       {/* Dynamic Background System - Changes per product */}
       <div className="fixed inset-0 z-0">
         {/* Dynamic primary gradient based on current device */}
@@ -353,36 +730,7 @@ export default function Home() {
       </div>
 
       {/* Top Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-slate-900/80 via-slate-900/40 to-transparent backdrop-blur-sm">
-        <div className="flex justify-between items-center px-4 md:px-12 py-4 md:py-8">
-          {/* Left - Brand */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <h1 className={`text-xs md:text-sm font-light tracking-[0.4em] uppercase font-mono transition-colors duration-1000 ${
-              currentDevice === 0 ? 'text-cyan-200' : 
-              currentDevice === 1 ? 'text-red-200' : 
-              'text-teal-200'
-            }`}>
-              ROLLINS WELLNESS
-            </h1>
-          </motion.div>
-          
-          {/* Right - Navigation - Hidden on mobile */}
-          <motion.div 
-            className="hidden md:flex gap-12"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <a href="#" className="text-white/70 hover:text-white text-xs tracking-[0.2em] uppercase font-light transition-colors duration-300">GALLERY</a>
-            <a href="#" className="text-white/70 hover:text-white text-xs tracking-[0.2em] uppercase font-light transition-colors duration-300">ABOUT</a>
-            <a href="#" className="text-white/70 hover:text-white text-xs tracking-[0.2em] uppercase font-light transition-colors duration-300">CONTACT</a>
-          </motion.div>
-        </div>
-      </nav>
+
 
       {/* Main Content Layout */}
       <div className="fixed inset-0 flex flex-col md:flex-row">
@@ -1557,7 +1905,7 @@ export default function Home() {
       {/* Bottom - Enhanced Explore Button */}
       <div className="fixed bottom-20 md:bottom-32 left-1/2 transform -translate-x-1/2 z-50">
         <motion.button
-          className={`relative px-8 md:px-12 py-3 md:py-4 text-xs font-light tracking-[0.3em] uppercase transition-all duration-1000 backdrop-blur-sm bg-black/10 font-mono overflow-hidden group ${
+          className={`relative px-8 md:px-12 py-3 md:py-4 text-xs font-light tracking-[0.3em] uppercase transition-all duration-1000 bg-black/10 font-mono overflow-hidden group ${
             currentDevice === 0 ? 'border border-cyan-400/60 text-cyan-200 hover:bg-cyan-400 hover:text-slate-900' : 
             currentDevice === 1 ? 'border border-red-400/60 text-red-200 hover:bg-red-400 hover:text-slate-900' : 
             'border border-teal-400/60 text-teal-200 hover:bg-teal-400 hover:text-slate-900'
@@ -1567,6 +1915,7 @@ export default function Home() {
           transition={{ delay: 1 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={goToDevicePage}
         >
           {/* Animated background on hover */}
           <motion.div
@@ -1589,49 +1938,68 @@ export default function Home() {
 
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 z-50">
-        <div className="flex items-center justify-between px-4 md:px-12 py-4 md:py-8 bg-black/40 md:bg-transparent backdrop-blur-sm md:backdrop-blur-none">
+        <div className="flex items-center justify-between px-4 md:px-12 py-4 md:py-8 bg-black/20 md:bg-transparent">
           
-          {/* Left - Copyright - Hidden on mobile */}
-          <div className="hidden md:block text-white/40 text-xs font-light">
-            Copyright 2024
+          {/* Left - Status */}
+          <div className="hidden md:flex items-center gap-2 text-white/70 text-xs font-light">
+            <span>{`Viewing ${currentDevice + 1} of ${devices.length}`}</span>
+            <span className="opacity-40">·</span>
+            <span className="truncate max-w-[200px]">{currentDeviceData.name}</span>
           </div>
           
           {/* Center - Device Navigation */}
           <div className="flex items-center gap-4 md:gap-8 mx-auto md:mx-0">
+            {/* Page Navigation */}
             <button 
-              onClick={() => switchDevice(Math.max(0, currentDevice - 1))}
-              className="text-white/60 hover:text-white transition-colors p-2"
-              disabled={currentDevice === 0}
+              onClick={prevPage}
+              className="text-white/90 hover:text-cyan-300 transition-all duration-300 p-2 rounded-lg hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed"
+              disabled={currentPage === 0}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="md:w-6 md:h-6">
                 <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
               </svg>
             </button>
             
-            <div className="flex gap-3 md:gap-6">
-              {devices.map((device, index) => (
-                <button
-                  key={device.id}
-                  onClick={() => switchDevice(index)}
-                  className={`w-12 h-8 md:w-16 md:h-10 rounded overflow-hidden transition-all duration-300 ${
-                    index === currentDevice 
-                      ? 'ring-1 ring-white opacity-100' 
-                      : 'opacity-40 hover:opacity-70'
-                  }`}
-                >
-                  <img
-                    src={device.fallbackImage}
-                    alt={device.name}
-                    className="w-full h-full object-cover filter brightness-150"
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex gap-2 md:gap-4">
+                {currentProducts.map((device, index) => {
+                  const globalIndex = startIndex + index;
+                  return (
+                    <button
+                      key={device.id}
+                      onClick={() => switchDevice(globalIndex)}
+                      className={`w-10 h-8 md:w-14 md:h-10 rounded overflow-hidden transition-all duration-300 ${
+                        globalIndex === currentDevice 
+                          ? 'ring-1 ring-white opacity-100' 
+                          : 'opacity-40 hover:opacity-70'
+                      }`}
+                    >
+                      <img
+                        src={device.fallbackImage}
+                        alt={device.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+              {/* Page Indicator */}
+              <div className="flex gap-1">
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <div
+                    key={i}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      i === currentPage ? 'bg-white' : 'bg-white/30'
+                    }`}
                   />
-                </button>
-              ))}
+                ))}
+              </div>
             </div>
             
             <button 
-              onClick={() => switchDevice(Math.min(devices.length - 1, currentDevice + 1))}
-              className="text-white/60 hover:text-white transition-colors p-2"
-              disabled={currentDevice === devices.length - 1}
+              onClick={nextPage}
+              className="text-white/90 hover:text-cyan-300 transition-all duration-300 p-2 rounded-lg hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed"
+              disabled={currentPage === totalPages - 1}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="md:w-6 md:h-6">
                 <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -1639,8 +2007,11 @@ export default function Home() {
             </button>
           </div>
           
-          {/* Right - Social Icons - Hidden on mobile */}
+          {/* Right - Social Icons & All Products */}
           <div className="hidden md:flex items-center gap-6">
+            <button onClick={() => setShowProductDrawer(true)} className="px-3 py-2 rounded-lg border border-white/15 text-white/80 hover:text-white hover:bg-white/5 transition-colors text-xs">
+              All Products
+            </button>
             <a href="#" className="text-white/40 hover:text-white transition-colors">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
@@ -1648,30 +2019,46 @@ export default function Home() {
             </a>
             <a href="#" className="text-white/40 hover:text-white transition-colors">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-              </svg>
-            </a>
-            <a href="#" className="text-white/40 hover:text-white transition-colors">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.001 12.017 24.001c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z"/>
               </svg>
             </a>
           </div>
         </div>
       </div>
 
-              {/* Scroll Area for Interaction */}
-        <div className="relative z-10 h-[300vh] md:h-[500vh]" />
+      {/* Slide-out Product Drawer */}
+      <div className={`fixed top-0 right-0 h-full w-[320px] bg-slate-900/95 border-l border-white/10 z-[60] transform transition-transform duration-300 ${showProductDrawer ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="p-4 border-b border-white/10 flex items-center justify-between">
+          <div className="text-white/80 text-sm tracking-wider">All Products</div>
+          <button onClick={() => setShowProductDrawer(false)} className="text-white/60 hover:text-white">✕</button>
+        </div>
+        <div className="p-3 overflow-y-auto h-full">
+          <div className="space-y-2">
+            {devices.map((d) => (
+              <button
+                key={d.id}
+                onClick={() => { setShowProductDrawer(false); router.push(productRoutes[d.id] || '/'); }}
+                className="w-full text-left px-3 py-2 rounded-md border border-white/10 hover:bg-white/5 text-white/80 hover:text-white transition-colors text-sm"
+              >
+                {d.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-        {/* Dev Reset Button - Only in Development */}
-        {process.env.NODE_ENV === 'development' && (
-          <button
-            onClick={resetIntro}
-            className="fixed bottom-4 left-4 z-50 px-3 py-2 bg-red-600 text-white text-xs rounded opacity-50 hover:opacity-100 transition-opacity"
-          >
-            Reset Intro
-          </button>
-        )}
-      </motion.div>
-    );
+      {/* Scroll Area for Interaction */}
+      <div className="relative z-10 h-[300vh] md:h-[500vh]" />
+
+      {/* Dev Reset Button - Only in Development */}
+      {process.env.NODE_ENV === 'development' && (
+        <button
+          onClick={resetIntro}
+          className="fixed bottom-4 left-4 z-50 px-3 py-2 bg-red-600 text-white text-xs rounded opacity-50 hover:opacity-100 transition-opacity"
+        >
+          Reset Intro
+        </button>
+      )}
+    </motion.div>
+  );
 } 

@@ -25,6 +25,13 @@ const Navigation = () => {
         {/* Navigation Links - Ferrari Style */}
         <div className="flex items-center space-x-12">
           <motion.a 
+            href="/wellness-devices" 
+            className="text-gray-300 hover:text-white transition-colors duration-300 text-sm font-medium tracking-wider"
+            whileHover={{ y: -2 }}
+          >
+            WELLNESS DEVICES
+          </motion.a>
+          <motion.a 
             href="#gallery" 
             className="text-gray-300 hover:text-white transition-colors duration-300 text-sm font-medium tracking-wider"
             whileHover={{ y: -2 }}
