@@ -400,24 +400,32 @@ export default function Home() {
   const [activeSpecIndex, setActiveSpecIndex] = useState(0);
   const [activeBenefitIndex, setActiveBenefitIndex] = useState(0);
   const [showProductDrawer, setShowProductDrawer] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const router = useRouter();
   
   const { scrollYProgress } = useScroll();
   
+  // Ensure component is mounted on client
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  
   // Enhanced loading sequence with localStorage check
   useEffect(() => {
-    // Check if user has seen intro before
-    const hasSeenIntro = localStorage.getItem('rollins-intro-seen') === 'true';
-    if (hasSeenIntro) {
-      // Skip loading for returning users
-      setIsLoading(false);
+    // Check if user has seen intro before - client-side only
+    if (isClient) {
+      const hasSeenIntro = localStorage.getItem('rollins-intro-seen') === 'true';
+      if (hasSeenIntro) {
+        // Skip loading for returning users
+        setIsLoading(false);
+      }
+      // If not seen before, CinematicLoader will handle showing and completion
     }
-    // If not seen before, CinematicLoader will handle showing and completion
-  }, []);
+  }, [isClient]);
 
   // Dev function to reset intro (only in development)
   const resetIntro = () => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' && isClient) {
       localStorage.removeItem('rollins-intro-seen');
       setIsLoading(true);
     }
@@ -425,6 +433,8 @@ export default function Home() {
 
   // Scroll progress tracking for feature highlighting
   useEffect(() => {
+    if (!isClient) return;
+    
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const windowHeight = window.innerHeight;
@@ -457,7 +467,7 @@ export default function Home() {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('touchmove', handleScroll);
     };
-  }, [currentDevice]);
+  }, [currentDevice, isClient]);
 
   // Benefits cycling system
   useEffect(() => {
@@ -479,7 +489,9 @@ export default function Home() {
       setActiveBenefitIndex(0);
       setScrollProgress(0);
       // Reset scroll position to top for new device
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (isClient) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
   };
 
@@ -543,7 +555,8 @@ export default function Home() {
     router.push(path);
   };
 
-  if (isLoading) {
+  // Don't render until client-side hydration is complete
+  if (!isClient || isLoading) {
     return (
       <AnimatePresence>
         <CinematicLoader 
@@ -556,6 +569,7 @@ export default function Home() {
 
   return (
     <motion.div 
+      key="main-content"
       className="relative min-h-screen overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}

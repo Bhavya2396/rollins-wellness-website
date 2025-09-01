@@ -17,7 +17,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ product }) => {
   // Enhanced scroll tracking with velocity
   useEffect(() => {
     let lastScrollY = 0;
-    let lastTime = Date.now();
+    let lastTime = performance.now();
 
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -25,7 +25,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ product }) => {
       const progress = Math.min(scrollTop / (docHeight || 1), 1);
       
       // Calculate velocity
-      const currentTime = Date.now();
+      const currentTime = performance.now();
       const timeDelta = currentTime - lastTime;
       const scrollDelta = scrollTop - lastScrollY;
       const velocity = Math.abs(scrollDelta / timeDelta) * 10;
@@ -134,7 +134,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ product }) => {
                     key={i}
                     className="absolute h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"
                     style={{
-                      top: `${Math.random() * 100}%`,
+                      top: `${(i * 5) % 100}%`,
                       left: '0%',
                       width: '100%',
                     }}

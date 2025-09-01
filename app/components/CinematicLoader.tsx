@@ -337,8 +337,8 @@ const CinematicLoader: React.FC<CinematicLoaderProps> = ({ onComplete, isMobile 
           key={i}
           className="absolute w-1 h-1 bg-white/30 rounded-full"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
+            left: `${(i * 7) % 100}%`,
+            top: `${(i * 11) % 100}%`,
           }}
           animate={{
             opacity: [0, 1, 0],
@@ -346,9 +346,9 @@ const CinematicLoader: React.FC<CinematicLoaderProps> = ({ onComplete, isMobile 
             y: [0, isMobile ? -60 : -100, isMobile ? -120 : -200]
           }}
           transition={{
-            duration: isMobile ? 3 : 4 + Math.random() * 2,
+            duration: isMobile ? 3 : 4 + (i % 3),
             repeat: Infinity,
-            delay: Math.random() * 4,
+            delay: (i * 0.3) % 4,
             ease: "easeOut"
           }}
         />
