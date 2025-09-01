@@ -32,7 +32,7 @@ const Navigation = () => {
             WELLNESS DEVICES
           </motion.a>
           <motion.a 
-            href="#gallery" 
+            href="/wellness-devices" 
             className="text-gray-300 hover:text-white transition-colors duration-300 text-sm font-medium tracking-wider"
             whileHover={{ y: -2 }}
           >

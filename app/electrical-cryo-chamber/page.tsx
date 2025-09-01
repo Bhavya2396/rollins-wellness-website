@@ -11,7 +11,7 @@ const deviceData = {
   description: 'The LIFECUBE Electrical Cryotherapy Chamber offers whole-body treatments without the use of nitrogen. By maintaining safe, breathable air at temperatures of -150°C, it ensures maximum safety and comfort for clients. This advanced system is ideal for athletes, recovery centers, and wellness clinics seeking a safe, sustainable cryotherapy solution.',
   rating: 4.9,
   modelPath: '/models/Electrical-Cryo-Chamber.glb',
-  fallbackImage: '/images/cryo-artic.webp',
+        fallbackImage: '/images/Cryo%20Science%20Chamber%20/NTL08818.JPG',
   benefits: [
     'Accelerates muscle recovery',
     'Reduces inflammation and pain',
