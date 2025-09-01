@@ -74,7 +74,7 @@ const devices = [
     description: '°CRYO Arctic Performance is a single person whole-body cryotherapy chamber designed to deliver the safest and most effective Cryo treatments. Built with state-of-the-art technology innovatively engineered to ensure that clients never come into direct contact with nitrogen vapors, only breathable air.',
     rating: 4.9,
     modelPath: '/images/2a63cebe-5eb0-4618-a1ef-1664be442c11.glb',
-    fallbackImage: '/images/device-placeholder.svg',
+    fallbackImage: '/images/cryo-artic.webp',
     benefits: [
       'Enhanced athletic performance',
       'Accelerated muscle recovery',
@@ -165,14 +165,14 @@ const devices = [
     description: 'The UBody Collagen Bed 2.0 is a light therapy system designed to rejuvenate the skin using clinically tested red and near-infrared wavelengths. By stimulating collagen and elastin production, it helps reduce fine lines, improve skin elasticity, and enhance hydration. This bed combines advanced LED technology with ergonomic comfort, making it suitable for spas, wellness centers, and beauty clinics. With pre-set treatment modes, users enjoy a comfortable, effective experience designed to promote both beauty and wellness.',
     rating: 4.8,
     modelPath: '/models/UBody-Collagen-Bed-2.glb',
-    fallbackImage: '/images/device-placeholder.svg',
-    benefits: [
-      'Boosts collagen production',
-      'Improves skin elasticity and tone',
-      'Reduces wrinkles and fine lines',
-      'Supports skin hydration',
-      'Promotes relaxation'
-    ],
+          fallbackImage: '/images/ubody-collagen-bed-3-0.webp',
+      benefits: [
+        'Boosts collagen production',
+        'Improves skin elasticity and tone',
+        'Reduces wrinkles and fine lines',
+        'Supports skin hydration',
+        'Promotes relaxation'
+      ],
     specs: [
       { name: 'LED wavelengths', value: 'Red & Near-infrared', trigger: 0.1 },
       { name: 'Design', value: 'Full-body treatment bed', trigger: 0.35 },
@@ -187,7 +187,7 @@ const devices = [
       description: 'The CRYO Penguin is designed to deliver the safest and most effective localized cryotherapy treatments in the industry. With its ergonomic design, pre-programmed protocols and built-in safety features, the device exceeds the highest standards. With pinpoint accuracy and power to handle everything from body appearance to relaxation after sport activity, the °CRYO Penguin™ is the most flexible cryotherapy machine on the market.',
       rating: 4.8,
       modelPath: '/models/Cryo-Penguin.glb',
-      fallbackImage: '/images/device-placeholder.svg',
+      fallbackImage: '/images/cryo-penguin.webp',
       benefits: [
         'Smart touch screen interface',
         'Ergonomic handle nozzle with quick access buttons',
@@ -211,7 +211,7 @@ const devices = [
       description: 'The TheraLAS Class 4 Laser is a cutting-edge therapeutic laser system for deep tissue therapy. With its medical-grade wavelengths, it penetrates deeply to accelerate healing, relieve pain, and improve mobility. Ideal for rehabilitation and physiotherapy centers, this laser combines portability with high clinical performance.',
       rating: 4.9,
       modelPath: '/models/Theralas-Laser.glb',
-      fallbackImage: '/images/device-placeholder.svg',
+      fallbackImage: '/images/theralas-device.webp',
       benefits: [
         'Reduces chronic pain and inflammation',
         'Accelerates tissue regeneration',
@@ -232,7 +232,7 @@ const devices = [
       description: 'The Ubody 300 Pro 2.0 wellness pod is a multi-modality system combining light therapy, detoxification, and rejuvenation technologies. It supports skin regeneration, circulation, and wellness with a relaxing, spa-like experience. This pod is designed for professional use in clinics and spas, offering customizable treatment programs to cater to diverse client needs.',
       rating: 4.7,
       modelPath: '/models/UBody-300-Pro-2.glb',
-      fallbackImage: '/images/device-placeholder.svg',
+      fallbackImage: '/images/ubody-300.webp',
       benefits: [
         'Stimulates collagen and elastin production',
         'Enhances circulation and recovery',
@@ -253,7 +253,7 @@ const devices = [
       description: 'The Ubody 900 Pro 2.0 is an advanced wellness pod designed for comprehensive skin and body rejuvenation. It integrates full-spectrum light and infrared therapy for enhanced anti-aging, slimming, and recovery results. Engineered for both luxury wellness centers and performance clinics, it combines advanced control features with ergonomic comfort for maximum effectiveness.',
       rating: 4.8,
       modelPath: '/models/UBody-900-Pro-2.glb',
-      fallbackImage: '/images/device-placeholder.svg',
+      fallbackImage: '/images/ubody-900.webp',
       benefits: [
         'Deep skin rejuvenation'
       ],
@@ -350,22 +350,26 @@ const devices = [
     {
       id: 'electrical-cryo-chamber',
       name: 'ELECTRICAL CRYOTHERAPY CHAMBER',
-      model: 'WHOLE BODY CRYO',
-      description: 'This electrical cryotherapy chamber offers whole-body treatments without the use of nitrogen. By maintaining safe, breathable air, it ensures maximum safety and comfort for clients. It is ideal for athletes, recovery centers, and wellness clinics seeking a safe, sustainable cryotherapy solution.',
-      rating: 4.8,
+      model: 'LIFECUBE WHOLE BODY CRYO',
+      description: 'The LIFECUBE Electrical Cryotherapy Chamber offers whole-body treatments without the use of nitrogen. By maintaining safe, breathable air at temperatures of -150°C, it ensures maximum safety and comfort for clients. This advanced system is ideal for athletes, recovery centers, and wellness clinics seeking a safe, sustainable cryotherapy solution.',
+      rating: 4.9,
       modelPath: '/models/Electrical-Cryo-Chamber.glb',
-      fallbackImage: '/images/device-placeholder.svg',
+      fallbackImage: '/images/cryo-artic.webp',
       benefits: [
         'Accelerates muscle recovery',
         'Reduces inflammation and pain',
         'Improves energy and performance',
-        'Enhances skin rejuvenation'
+        'Enhances skin rejuvenation',
+        'Stimulates metabolic rate for weight loss',
+        'Releases endorphins for mental clarity'
       ],
       specs: [
         { name: 'System', value: 'Electrical cooling system', trigger: 0.1 },
-        { name: 'Temperature', value: '-110°C to -140°C', trigger: 0.35 },
-        { name: 'Safety', value: 'Safe air-only system', trigger: 0.6 },
-        { name: 'Interface', value: 'Touchscreen interface', trigger: 0.8 }
+        { name: 'Temperature', value: '-150°C operating range', trigger: 0.25 },
+        { name: 'Safety', value: 'Safe air-only system', trigger: 0.4 },
+        { name: 'Interface', value: 'Touchscreen interface', trigger: 0.55 },
+        { name: 'Design', value: 'Modular white chamber with LED lighting', trigger: 0.7 },
+        { name: 'Brand', value: 'LIFECUBE technology', trigger: 0.85 }
       ]
     },
     {
@@ -577,32 +581,32 @@ export default function Home() {
     >
       {/* Enhanced Navigation - Aligned with content */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-slate-900/90 via-slate-900/70 to-transparent backdrop-blur-sm border-b border-white/10">
-        <div className="flex justify-between items-center px-4 md:px-8 lg:px-12 py-4 md:py-6">
+        <div className="flex justify-between items-center px-4 sm:px-6 md:px-8 lg:px-12 py-3 sm:py-4 md:py-6">
           {/* Left - Brand */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <h1 className="text-lg md:text-xl font-bold tracking-[0.2em] uppercase text-white hover:text-cyan-200 transition-all duration-300 cursor-pointer">
+            <h1 className="text-base sm:text-lg md:text-xl font-bold tracking-[0.1em] sm:tracking-[0.2em] uppercase text-white hover:text-cyan-200 transition-all duration-300 cursor-pointer">
               ROLLINS WELLNESS
             </h1>
           </motion.div>
           
           {/* Right - Navigation */}
           <motion.div 
-            className="flex items-center gap-8 md:gap-12"
+            className="flex items-center gap-4 sm:gap-6 md:gap-8 lg:gap-12"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <a href="#gallery" className="text-white/80 hover:text-cyan-200 text-sm md:text-base tracking-[0.1em] uppercase font-medium transition-all duration-300 hover:scale-105">
+            <a href="#gallery" className="text-white/80 hover:text-cyan-200 text-xs sm:text-sm md:text-base tracking-[0.05em] sm:tracking-[0.1em] uppercase font-medium transition-all duration-300 hover:scale-105">
               Gallery
             </a>
-            <a href="#about" className="text-white/80 hover:text-cyan-200 text-sm md:text-base tracking-[0.1em] uppercase font-medium transition-all duration-300 hover:scale-105">
+            <a href="#about" className="text-white/80 hover:text-cyan-200 text-xs sm:text-sm md:text-base tracking-[0.05em] sm:tracking-[0.1em] uppercase font-medium transition-all duration-300 hover:scale-105">
               About
             </a>
-            <a href="#contact" className="text-white/80 hover:text-cyan-200 text-sm md:text-base tracking-[0.1em] uppercase font-medium transition-all duration-300 hover:scale-105">
+            <a href="#contact" className="text-white/80 hover:text-cyan-200 text-xs sm:text-sm md:text-base tracking-[0.05em] sm:tracking-[0.1em] uppercase font-medium transition-all duration-300 hover:scale-105">
               Contact
             </a>
           </motion.div>

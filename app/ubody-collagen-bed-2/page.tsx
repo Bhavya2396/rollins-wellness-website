@@ -1,26 +1,15 @@
 'use client';
 
-import React, { useEffect, useState, Suspense } from 'react';
-import { motion } from 'framer-motion';
-import dynamic from 'next/dynamic';
-import Link from 'next/link';
-
-const MedicalDevice3D = dynamic(() => import('../components/MedicalDevice3D'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-full bg-[#2a3142] flex items-center justify-center">
-      <div className="text-white text-lg">Loading 3D Model...</div>
-    </div>
-  )
-});
+import React from 'react';
+import ResponsiveProductLayout from '../components/ResponsiveProductLayout';
+import { getProductTheme } from '../data/productThemes';
 
 const deviceData = {
   id: 'ubody-collagen-bed-2',
   name: 'UBODY COLLAGEN BED 2.0',
-  model: 'Red & Near-Infrared Light Therapy',
-  description:
-    'The UBody Collagen Bed 2.0 is a light therapy system designed to rejuvenate the skin using clinically tested red and near-infrared wavelengths. By stimulating collagen and elastin production, it helps reduce fine lines, improve skin elasticity, and enhance hydration. This bed combines advanced LED technology with ergonomic comfort, making it suitable for spas, wellness centers, and beauty clinics. With pre-set treatment modes, users enjoy a comfortable, effective experience designed to promote both beauty and wellness.',
-  rating: 4.8,
+  model: 'ADVANCED LIGHT THERAPY',
+  description: 'The UBody Collagen Bed 2.0 is a light therapy system designed to rejuvenate the skin using clinically tested red and near-infrared wavelengths. By stimulating collagen and elastin production, it helps reduce fine lines, improve skin elasticity, and enhance hydration. This bed combines advanced LED technology with ergonomic comfort, making it suitable for spas, wellness centers, and beauty clinics.',
+  rating: 4.9,
   modelPath: '/models/UBody-Collagen-Bed-2.glb',
   fallbackImage: '/images/device-placeholder.svg',
   benefits: [
@@ -31,144 +20,24 @@ const deviceData = {
     'Promotes relaxation'
   ],
   specs: [
-    { name: 'LED wavelengths', value: 'Red & Near-infrared' },
-    { name: 'Design', value: 'Full-body treatment bed design' },
-    { name: 'Programs', value: 'Adjustable session programs' },
-    { name: 'Output', value: 'Clinical-grade light output' }
-  ]
+    { name: 'LED Wavelengths', value: 'Red & Near-infrared', trigger: 0.1 },
+    { name: 'Full-body treatment bed design', value: 'Ergonomic comfort', trigger: 0.25 },
+    { name: 'Adjustable session programs', value: 'Customizable treatments', trigger: 0.4 },
+    { name: 'Clinical-grade light output', value: 'Medical-grade LEDs', trigger: 0.55 },
+    { name: 'Safety features', value: 'Eye protection & timers', trigger: 0.7 },
+    { name: 'Control system', value: 'Touchscreen interface', trigger: 0.85 }
+  ],
+  category: 'Light Therapy'
 };
 
-export default function UBodyCollagenBed20Page() {
-  const [activeSpecIndex, setActiveSpecIndex] = useState(0);
-  const [activeBenefitIndex, setActiveBenefitIndex] = useState(0);
-  const [scrollProgress, setScrollProgress] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? scrollTop / docHeight : 0;
-      setScrollProgress(progress);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const specInterval = setInterval(() => {
-      setActiveSpecIndex((prev) => (prev + 1) % deviceData.specs.length);
-    }, 3000);
-    const benefitInterval = setInterval(() => {
-      setActiveBenefitIndex((prev) => (prev + 1) % deviceData.benefits.length);
-    }, 3500);
-    return () => {
-      clearInterval(specInterval);
-      clearInterval(benefitInterval);
-    };
-  }, []);
-
+export default function UBodyCollagenBed2Page() {
+  const backgroundTheme = getProductTheme('ubody-collagen-bed-2');
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-red-900/25 to-slate-900">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-md border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="text-white text-xl font-bold hover:text-red-400 transition-colors">
-              ← Back to Home
-            </Link>
-            <div className="text-white text-lg font-semibold">
-              {deviceData.name}
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* Layout */}
-      <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-10 items-start">
-          {/* Left - Description & Benefits */}
-          <div className="space-y-8 lg:col-span-1">
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-4xl md:text-5xl font-bold text-white leading-tight"
-            >
-              {deviceData.name}
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.15 }}
-              className="text-base md:text-lg text-gray-300 leading-relaxed"
-            >
-              {deviceData.description}
-            </motion.p>
-
-            <div className="space-y-4">
-              <h2 className="text-white/80 tracking-widest text-xs uppercase">Benefits</h2>
-              <div className="grid grid-cols-1 gap-4">
-                {deviceData.benefits.map((benefit, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: 10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.05 }}
-                    className={`flex items-start gap-3 p-3 rounded-lg border ${
-                      index === activeBenefitIndex
-                        ? 'border-red-400/60 bg-red-900/20 shadow-lg shadow-red-500/10'
-                        : 'border-white/15 bg-white/5'
-                    }`}
-                  >
-                    <span className="text-red-300 mt-1">✨</span>
-                    <span className="text-white/90 text-sm md:text-base">{benefit}</span>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Center - 3D Model */}
-          <div className="h-[520px] md:h-[640px] lg:col-span-1">
-            <div className="h-full w-full rounded-xl overflow-hidden border border-white/10 bg-black/20">
-              <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-white">Loading 3D...</div>}>
-                <MedicalDevice3D
-                  modelUrl={deviceData.modelPath}
-                  fallbackImage={deviceData.fallbackImage}
-                  deviceName={deviceData.name}
-                  category="Red Light Therapy"
-                  rating={deviceData.rating}
-                  scrollProgress={scrollProgress}
-                />
-              </Suspense>
-            </div>
-          </div>
-
-          {/* Right - Specs */}
-          <div className="space-y-4 lg:col-span-1">
-            <h2 className="text-white/80 tracking-widest text-xs uppercase">Specifications</h2>
-            <div className="grid grid-cols-1 gap-4">
-              {deviceData.specs.map((spec, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? 20 : -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.05 }}
-                  className={`p-4 rounded-lg border ${
-                    index === activeSpecIndex
-                      ? 'border-green-400/60 bg-green-900/20 shadow-lg shadow-green-500/10'
-                      : 'border-white/15 bg-white/5'
-                  }`}
-                >
-                  <div className="text-green-300 text-sm">{spec.name}</div>
-                  <div className="text-white text-base font-medium">{spec.value}</div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+    <ResponsiveProductLayout 
+      deviceData={deviceData} 
+      backgroundTheme={backgroundTheme}
+    />
   );
 }
 
