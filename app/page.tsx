@@ -1992,11 +1992,11 @@ export default function Home() {
                           : 'opacity-40 hover:opacity-70'
                       }`}
                     >
-                      <img
-                        src={device.fallbackImage}
-                        alt={device.name}
-                        className="w-full h-full object-cover"
-                      />
+                      <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-slate-700 to-slate-900 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 md:w-6 md:h-6 text-white/70">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15m0 0l-3.75 2.25M21 15l3.75 2.25M18 12V15m0-3-3.75 2.25M18 12l3.75 2.25M15 9V15m0-6-3.75 2.25M15 9l3.75 2.25M12 6V15m0-9-3.75 2.25M12 6l3.75 2.25M9 3V15m0-12L5.25 5.25M9 3l3.75 2.25" />
+                        </svg>
+                      </div>
                     </button>
                   );
                 })}
