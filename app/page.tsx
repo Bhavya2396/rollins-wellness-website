@@ -74,7 +74,7 @@ const devices = [
     description: '°CRYO Arctic Performance is a single person whole-body cryotherapy chamber designed to deliver the safest and most effective Cryo treatments. Built with state-of-the-art technology innovatively engineered to ensure that clients never come into direct contact with nitrogen vapors, only breathable air.',
     rating: 4.9,
     modelPath: '/images/2a63cebe-5eb0-4618-a1ef-1664be442c11.glb',
-    fallbackImage: '/images/cryo-artic.webp',
+          fallbackImage: '/images/Cryo Chamber Lifecube/_DSC5195.JPG',
     benefits: [
       'Enhanced athletic performance',
       'Accelerated muscle recovery',
@@ -142,7 +142,7 @@ const devices = [
     description: 'Safe, innovative hyperbaric oxygen therapy at 1.5 ATA to increase oxygen concentration in the bloodstream and accelerate natural healing.',
     rating: 4.8,
     modelPath: 'https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/Rollins%20-%20wellness%20-%20/HBOT%201.5ATA%20%282%29.glb',
-    fallbackImage: '/images/device-placeholder.svg',
+    fallbackImage: '/images/HBOT 1.5ATA/SGRC0740.JPG',
     benefits: [
       'Improves brain function & metabolism',
       'Increases tissue oxygenation',
@@ -187,7 +187,7 @@ const devices = [
       description: 'The CRYO Penguin is designed to deliver the safest and most effective localized cryotherapy treatments in the industry. With its ergonomic design, pre-programmed protocols and built-in safety features, the device exceeds the highest standards. With pinpoint accuracy and power to handle everything from body appearance to relaxation after sport activity, the °CRYO Penguin™ is the most flexible cryotherapy machine on the market.',
       rating: 4.8,
       modelPath: '/models/Cryo-Penguin.glb',
-      fallbackImage: '/images/cryo-penguin.webp',
+      fallbackImage: '/images/Cryo Penguin /SGRC0681.JPG',
       benefits: [
         'Smart touch screen interface',
         'Ergonomic handle nozzle with quick access buttons',
@@ -270,7 +270,7 @@ const devices = [
       description: 'The Total Wellness Capsule integrates multiple therapies—infrared heat, vibration, detoxification, and LED light therapy—into one enclosed pod. It delivers a relaxing full-body wellness experience while stimulating circulation, detoxification, and weight management. Popular in spas and wellness centers for its holistic approach.',
       rating: 4.8,
       modelPath: '/models/Total-Wellness-Capsule.glb',
-      fallbackImage: '/images/device-placeholder.svg',
+      fallbackImage: '/images/Total Wellness Capsule/_DSC5182.JPG',
       benefits: [
         'Promotes detoxification',
         'Enhances weight loss and inch reduction',
@@ -312,7 +312,7 @@ const devices = [
       description: 'The Ubody EMS Kegel Chair provides non-invasive pelvic floor therapy using high-intensity focused EMS technology. By inducing powerful muscle contractions, it strengthens pelvic floor muscles and supports intimate wellness. Designed for comfort and privacy, it offers effective results without downtime or invasive procedures.',
       rating: 4.8,
       modelPath: '/models/Ubody-EMS-Kegel-Chair.glb',
-      fallbackImage: '/images/device-placeholder.svg',
+      fallbackImage: '/images/EMS Kegel Chair /IMG_0663_(1).jpg',
       benefits: [
         'Strengthens pelvic floor muscles',
         'Treats urinary incontinence',
@@ -333,7 +333,7 @@ const devices = [
       description: 'The Ubody Far Infrared Sauna is a modern detox solution that uses far-infrared heat to deeply penetrate tissues. Unlike traditional saunas, it promotes sweating at lower, more comfortable temperatures, making it ideal for relaxation and detoxification.',
       rating: 4.8,
       modelPath: '/models/Ubody-Far-Infrared-Sauna.glb',
-      fallbackImage: '/images/device-placeholder.svg',
+      fallbackImage: '/images/FIR Sauna /_DSC5199.JPG',
       benefits: [
         'Supports detoxification and weight management',
         'Improves circulation',
@@ -354,7 +354,7 @@ const devices = [
       description: 'The LIFECUBE Electrical Cryotherapy Chamber offers whole-body treatments without the use of nitrogen. By maintaining safe, breathable air at temperatures of -150°C, it ensures maximum safety and comfort for clients. This advanced system is ideal for athletes, recovery centers, and wellness clinics seeking a safe, sustainable cryotherapy solution.',
       rating: 4.9,
       modelPath: '/models/Electrical-Cryo-Chamber.glb',
-      fallbackImage: '/images/cryo-artic.webp',
+      fallbackImage: '/images/Cryo Science Chamber /NTL08818.JPG',
       benefits: [
         'Accelerates muscle recovery',
         'Reduces inflammation and pain',
@@ -379,7 +379,7 @@ const devices = [
       description: 'CryoEMS offers an unparalleled 2-in-1 advantage: cryolipolysis and electrical muscle stimulation combined in one device. This combination reduces fat, improves complexion, and tightens tissue. With cold handpieces, it also enables facial treatments and delivers a complete wellness package.',
       rating: 4.8,
       modelPath: '/models/CryoEMS.glb',
-      fallbackImage: '/images/device-placeholder.svg',
+      fallbackImage: '/images/Cryo EMS /SGRC0689.JPG',
       benefits: [
         'Unique combination – three technologies in one device',
         'Simultaneous application on up to 8 body areas',
