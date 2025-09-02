@@ -560,7 +560,11 @@ export default function Home() {
   };
 
   // Don't render until client-side hydration is complete
-  if (!isClient || isLoading) {
+  if (!isClient) {
+    return <div className="min-h-screen bg-slate-900" />;
+  }
+
+  if (isLoading) {
     return (
       <AnimatePresence>
         <CinematicLoader 
@@ -573,7 +577,7 @@ export default function Home() {
 
   return (
     <motion.div 
-      key="main-content"
+      key={`main-content-${isClient}`}
       className="relative min-h-screen overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
