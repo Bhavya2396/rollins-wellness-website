@@ -28,7 +28,12 @@ const deviceData = {
     { name: 'Session Duration', value: '30-60 minutes customizable', trigger: 0.7 },
     { name: 'Control System', value: 'Advanced touchscreen interface', trigger: 0.85 }
   ],
-  category: 'Premium Wellness Pod'
+  category: 'Premium Wellness Pod',
+  galleryImages: [
+    '/images/EMS Training /_DSC5190.JPG',
+    '/images/EMS Training /_DSC5193.JPG',
+    '/images/EMS Training /_DSC5194.JPG'
+  ]
 };
 
 export default function UBody900Pro2Page() {

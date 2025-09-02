@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import ProductGallery from './ProductGallery';
+import ClientOnly from './ClientOnly';
 
 // Dynamic imports to prevent SSR issues
 const MedicalDevice3D = dynamic(() => import('./MedicalDevice3D'), { 
@@ -30,6 +32,7 @@ interface ProductData {
   benefits: string[];
   specs: ProductSpec[];
   category: string;
+  galleryImages?: string[];
 }
 
 interface ResponsiveProductLayoutProps {
@@ -134,14 +137,23 @@ export default function ResponsiveProductLayout({ deviceData, backgroundTheme }:
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* 3D Model - Responsive */}
             <div className="h-[400px] sm:h-[500px] lg:h-[600px] relative order-2 lg:order-1">
-              <MedicalDevice3D
-                modelUrl={deviceData.modelPath}
-                fallbackImage={deviceData.fallbackImage}
-                deviceName={deviceData.name}
-                category={deviceData.category}
-                rating={deviceData.rating}
-                scrollProgress={scrollProgress}
-              />
+              <ClientOnly fallback={
+                <div className="w-full h-full bg-[#2a3142] flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                    <p className="text-white text-sm">Loading 3D Model...</p>
+                  </div>
+                </div>
+              }>
+                <MedicalDevice3D
+                  modelUrl={deviceData.modelPath}
+                  fallbackImage={deviceData.fallbackImage}
+                  deviceName={deviceData.name}
+                  category={deviceData.category}
+                  rating={deviceData.rating}
+                  scrollProgress={scrollProgress}
+                />
+              </ClientOnly>
             </div>
 
             {/* Content - Responsive */}
@@ -221,6 +233,17 @@ export default function ResponsiveProductLayout({ deviceData, backgroundTheme }:
           </div>
         </div>
       </section>
+
+      {/* Product Gallery Section */}
+      {deviceData.galleryImages && deviceData.galleryImages.length > 0 && (
+        <ClientOnly>
+          <ProductGallery 
+            images={deviceData.galleryImages} 
+            productName={deviceData.name}
+            backgroundTheme={backgroundTheme}
+          />
+        </ClientOnly>
+      )}
 
       {/* Specifications Section */}
       <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8">

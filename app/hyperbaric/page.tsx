@@ -10,7 +10,7 @@ const deviceData = {
   model: 'SAMBO VENTEC 3 ATA',
   description: 'Hyperbaric Oxygen Therapy (HBOT) is a cutting-edge, safe, simple, and effective therapy that improves the concentration & supply of oxygen in our blood, which in turn supercharges the rate at which our bodies heal. Under pressurized conditions, your lungs can gather much more oxygen than would be possible breathing pure oxygen at normal air pressure.',
   rating: 4.9,
-  modelPath: '/models/hyperbaric-chamber.glb',
+  modelPath: 'https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/Rollins%20-%20wellness%20-%20/HBOT%203ATA.glb',
   fallbackImage: '/images/device-placeholder.svg',
   benefits: [
     'Improved brain function and metabolism',
@@ -28,12 +28,15 @@ const deviceData = {
     { name: 'Pressurization Time', value: '~15 minutes to 200kPa', trigger: 0.7 },
     { name: 'Material', value: 'Galvanized Steel with powder coating', trigger: 0.85 }
   ],
-  category: 'Hyperbaric Therapy'
+  category: 'Hyperbaric Therapy',
+  galleryImages: [
+    '/images/hyperbaric-oxygen-therapy-chamber.png'
+  ]
 };
 
 export default function HyperbaricPage() {
   const backgroundTheme = getProductTheme('hyperbaric');
-  
+
   return (
     <ResponsiveProductLayout 
       deviceData={deviceData} 

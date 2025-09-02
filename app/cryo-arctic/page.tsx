@@ -1,5 +1,6 @@
 'use client';
 
+
 import React from 'react';
 import ResponsiveProductLayout from '../components/ResponsiveProductLayout';
 import { getProductTheme } from '../data/productThemes';
@@ -10,7 +11,7 @@ const deviceData = {
   model: 'PERFORMANCE™',
   description: 'CRYO Arctic Performance is a single person whole-body cryotherapy chamber designed to deliver the safest and most effective Cryo treatments. Built with state-of-the-art technology innovatively engineered to ensure that clients never come into direct contact with nitrogen vapors, only breathable air.',
   rating: 4.9,
-  modelPath: '/images/2a63cebe-5eb0-4618-a1ef-1664be442c11.glb',
+  modelPath: '/models/Cryo-Penguin.glb',
   fallbackImage: '/images/device-placeholder.svg',
   benefits: [
     'Enhanced athletic performance',
@@ -28,7 +29,12 @@ const deviceData = {
     { name: 'Smart Technology', value: 'Wi-Fi connectivity for remote assistance', trigger: 0.7 },
     { name: 'Safety Monitoring', value: 'Built-in oxygen & temperature sensors', trigger: 0.85 }
   ],
-  category: 'Cryotherapy'
+  category: 'Cryotherapy',
+  galleryImages: [
+    '/images/Cryo Science Chamber /NTL08818.JPG',
+    '/images/Cryo Science Chamber /NTL08820.JPG',
+    '/images/Cryo Science Chamber /NTL08822.JPG'
+  ]
 };
 
 export default function CryoArcticPage() {

@@ -11,6 +11,7 @@ interface CinematicLoaderProps {
 const CinematicLoader: React.FC<CinematicLoaderProps> = ({ onComplete, isMobile = false }) => {
   const [currentPhase, setCurrentPhase] = useState(0);
   const [hasSeenIntro, setHasSeenIntro] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   const phases = [
     {
@@ -39,15 +40,22 @@ const CinematicLoader: React.FC<CinematicLoaderProps> = ({ onComplete, isMobile 
     }
   ];
 
+  // Client-side mounting check
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // Check if user has already seen the intro
   useEffect(() => {
+    if (!isClient) return;
+    
     const hasSeenBefore = localStorage.getItem('rollins-intro-seen') === 'true';
     if (hasSeenBefore) {
       setHasSeenIntro(true);
       // Skip intro for returning users
       setTimeout(onComplete, 100);
     }
-  }, [onComplete]);
+  }, [onComplete, isClient]);
 
   // Handle next phase or completion
   const handleNext = () => {
@@ -55,16 +63,25 @@ const CinematicLoader: React.FC<CinematicLoaderProps> = ({ onComplete, isMobile 
       setCurrentPhase(currentPhase + 1);
     } else {
       // Mark as seen and complete
-      localStorage.setItem('rollins-intro-seen', 'true');
+      if (isClient) {
+        localStorage.setItem('rollins-intro-seen', 'true');
+      }
       onComplete();
     }
   };
 
   // Handle skip to end
   const handleSkip = () => {
-    localStorage.setItem('rollins-intro-seen', 'true');
+    if (isClient) {
+      localStorage.setItem('rollins-intro-seen', 'true');
+    }
     onComplete();
   };
+
+  // Don't render until client-side hydration is complete
+  if (!isClient) {
+    return <div className="min-h-screen bg-slate-900" />;
+  }
 
   // Don't render if user has already seen it
   if (hasSeenIntro) {

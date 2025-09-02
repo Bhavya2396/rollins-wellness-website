@@ -28,7 +28,11 @@ const deviceData = {
     { name: 'Design', value: 'Modular white chamber with LED lighting', trigger: 0.7 },
     { name: 'Brand', value: 'LIFECUBE technology', trigger: 0.85 }
   ],
-  category: 'Cryotherapy'
+  category: 'Cryotherapy',
+  galleryImages: [
+    '/images/Cryo Chamber Lifecube/_DSC5195.JPG',
+    '/images/Cryo Chamber Lifecube/_DSC5196.JPG'
+  ]
 };
 
 export default function ElectricalCryoChamberPage() {

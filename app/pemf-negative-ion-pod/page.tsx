@@ -28,7 +28,10 @@ const deviceData = {
     { name: 'Session Duration', value: '20-40 minutes per session', trigger: 0.7 },
     { name: 'Safety Features', value: 'Automatic shutoff & monitoring', trigger: 0.85 }
   ],
-  category: 'PEMF Therapy'
+  category: 'PEMF Therapy',
+  galleryImages: [
+    '/images/device-placeholder.svg'
+  ]
 };
 
 export default function PEMFNegativeIonPodPage() {

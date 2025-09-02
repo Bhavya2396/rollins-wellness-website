@@ -28,7 +28,11 @@ const deviceData = {
     { name: 'Smart Technology', value: 'Wi-Fi connectivity for remote assistance', trigger: 0.7 },
     { name: 'Safety Monitoring', value: 'Built-in oxygen & temperature sensors', trigger: 0.85 }
   ],
-  category: 'Cryotherapy'
+  category: 'Cryotherapy',
+  galleryImages: [
+    '/images/Cryo Penguin /SGRC0681.JPG',
+    '/images/Cryo Penguin /SGRC0683.JPG'
+  ]
 };
 
 export default function CryoPenguinPage() {

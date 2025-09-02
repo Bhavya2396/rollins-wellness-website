@@ -5,15 +5,20 @@ import { motion, AnimatePresence, useScroll, useTransform, useMotionValue } from
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import ModelErrorBoundary from './components/ModelErrorBoundary';
+import ClientOnly from './components/ClientOnly';
 
 // Dynamic imports to prevent SSR issues
 const MedicalDevice3D = dynamic(() => import('./components/MedicalDevice3D'), { 
   ssr: false,
-  loading: () => <div className="w-full h-full bg-[#2a3142]" />
+  loading: () => <div className="w-full h-full bg-[#2a3142] flex items-center justify-center">
+    <div className="text-white text-lg">Loading 3D Model...</div>
+  </div>
 });
 
 const CinematicLoader = dynamic(() => import('./components/CinematicLoader'), {
-  ssr: false
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-[#2a3142]" />
 });
 
 const devices = [
@@ -98,7 +103,7 @@ const devices = [
     model: 'MINERAL & METAL ANALYSIS',
     description: 'Real-time spectrophotometry-based assessment of minerals, trace elements, and heavy metals. Non-invasive and immediate results for intracellular insight.',
     rating: 4.9,
-    modelPath: 'https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/The%20Oligoscan%201.glb',
+    modelPath: '/models/The Oligoscan 1.glb',
     fallbackImage: '/images/device-placeholder.svg',
     benefits: [
       'Instant mineral analysis',
@@ -119,7 +124,7 @@ const devices = [
     model: 'THERAPY SYSTEM',
     description: 'Compact therapy system designed to improve circulation, reduce inflammation, and promote natural healing through safe heat therapy to hands and feet.',
     rating: 4.7,
-    modelPath: 'https://4zlf2zwvce3dyi4q.public.blob.vercel-storage.com/GLB%20FILES%20FOLDER%20/Avacen.glb',
+    modelPath: '/models/Avacen.glb',
     fallbackImage: '/images/device-placeholder.svg',
     benefits: [
       'Reduces pain and inflammation',
@@ -141,7 +146,7 @@ const devices = [
     model: 'HYPERBARIC CHAMBER',
     description: 'Safe, innovative hyperbaric oxygen therapy at 1.5 ATA to increase oxygen concentration in the bloodstream and accelerate natural healing.',
     rating: 4.8,
-    modelPath: 'https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/Rollins%20-%20wellness%20-%20/HBOT%201.5ATA%20%282%29.glb',
+    modelPath: '/models/HBOT 1.5ATA (2).glb',
           fallbackImage: '/images/HBOT%201.5ATA/SGRC0740.JPG',
     benefits: [
       'Improves brain function & metabolism',
@@ -1792,23 +1797,34 @@ export default function Home() {
         {/* Center - 3D Showcase */}
         <div className="flex-1 relative order-1 md:order-2 h-1/2 md:h-full">
           <div className="absolute inset-0">
-            <Suspense fallback={
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 md:h-12 md:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                  <p className="text-white text-xs md:text-sm">Loading 3D Model...</p>
+            <ModelErrorBoundary>
+              <Suspense fallback={
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 md:h-12 md:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                    <p className="text-white text-xs md:text-sm">Loading 3D Model...</p>
+                  </div>
                 </div>
-              </div>
-            }>
-              <MedicalDevice3D
-                modelUrl={currentDeviceData.modelPath}
-                fallbackImage={currentDeviceData.fallbackImage}
-                deviceName={currentDeviceData.name}
-                category={currentDeviceData.model}
-                rating={currentDeviceData.rating}
-                scrollProgress={scrollProgress}
-              />
-            </Suspense>
+              }>
+                <ClientOnly fallback={
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-8 w-8 md:h-12 md:w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                      <p className="text-white text-xs md:text-sm">Loading...</p>
+                    </div>
+                  </div>
+                }>
+                  <MedicalDevice3D
+                    modelUrl={currentDeviceData.modelPath}
+                    fallbackImage={currentDeviceData.fallbackImage}
+                    deviceName={currentDeviceData.name}
+                    category={currentDeviceData.model}
+                    rating={currentDeviceData.rating}
+                    scrollProgress={scrollProgress}
+                  />
+                </ClientOnly>
+              </Suspense>
+            </ModelErrorBoundary>
           </div>
         </div>
 

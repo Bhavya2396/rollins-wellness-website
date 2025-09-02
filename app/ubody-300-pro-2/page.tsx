@@ -28,7 +28,12 @@ const deviceData = {
     { name: 'Control System', value: 'Touchscreen interface', trigger: 0.7 },
     { name: 'Safety Features', value: 'Temperature monitoring & timers', trigger: 0.85 }
   ],
-  category: 'Wellness Pod'
+  category: 'Wellness Pod',
+  galleryImages: [
+    '/images/EMS Training /_DSC5190.JPG',
+    '/images/EMS Training /_DSC5193.JPG',
+    '/images/EMS Training /_DSC5194.JPG'
+  ]
 };
 
 export default function UBody300Pro2Page() {

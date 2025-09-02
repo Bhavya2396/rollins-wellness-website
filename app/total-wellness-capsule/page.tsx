@@ -28,7 +28,12 @@ const deviceData = {
     { name: 'Multi-program Settings', value: 'Customizable treatment protocols', trigger: 0.7 },
     { name: 'Control Panel', value: 'Touchscreen interface', trigger: 0.85 }
   ],
-  category: 'Wellness Pod'
+  category: 'Wellness Pod',
+  galleryImages: [
+    '/images/Total Wellness Capsule/_DSC5182.JPG',
+    '/images/Total Wellness Capsule/_DSC5183.JPG',
+    '/images/Total Wellness Capsule/Copy of DSC08477.JPG'
+  ]
 };
 
 export default function TotalWellnessCapsulePage() {

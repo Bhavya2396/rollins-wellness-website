@@ -13,9 +13,17 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ product }) => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollVelocity, setScrollVelocity] = useState(0);
   const [isInView, setIsInView] = useState(true);
+  const [isClient, setIsClient] = useState(false);
+
+  // Client-side mounting check
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Enhanced scroll tracking with velocity
   useEffect(() => {
+    if (!isClient) return;
+    
     let lastScrollY = 0;
     let lastTime = performance.now();
 
@@ -39,7 +47,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ product }) => {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isClient]);
 
   // Scroll phase detection
   const getScrollPhase = () => {

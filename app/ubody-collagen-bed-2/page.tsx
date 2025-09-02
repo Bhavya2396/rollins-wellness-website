@@ -27,7 +27,11 @@ const deviceData = {
     { name: 'Safety features', value: 'Eye protection & timers', trigger: 0.7 },
     { name: 'Control system', value: 'Touchscreen interface', trigger: 0.85 }
   ],
-  category: 'Light Therapy'
+  category: 'Light Therapy',
+  galleryImages: [
+    '/images/ubody-collagen-bed-3-0.webp',
+    '/images/ubody-collagen-bed.webp'
+  ]
 };
 
 export default function UBodyCollagenBed2Page() {

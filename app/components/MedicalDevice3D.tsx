@@ -89,20 +89,44 @@ const DesktopMedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
   deviceName
 }) => {
   const [modelError, setModelError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const meshRef = useRef<THREE.Group>(null);
   const { gl } = useThree();
 
-  // Use useGLTF hook at top level (cannot be conditional)
-  const gltf = useGLTF(url);
+  // Use useGLTF hook - must be called unconditionally
+  let gltf = null;
+  if (url && url.trim() !== '') {
+    gltf = useGLTF(url);
+  }
 
   // Handle loading errors with useEffect
   useEffect(() => {
-    if (!gltf || !gltf.scene) {
+    if (!url || url.trim() === '') {
       setModelError(true);
-    } else {
-      setModelError(false);
+      setIsLoading(false);
+      return;
     }
-  }, [gltf]);
+
+    // Add a timeout to detect if GLTF loading is taking too long
+    const timeout = setTimeout(() => {
+      if (!gltf || !gltf.scene) {
+        console.warn('GLTF loading timeout for URL:', url);
+        setModelError(true);
+        setIsLoading(false);
+      }
+    }, 10000); // 10 second timeout
+
+    if (!gltf || !gltf.scene) {
+      // Don't immediately set error, wait for timeout or successful load
+      return;
+    } else {
+      clearTimeout(timeout);
+      setModelError(false);
+      setIsLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [gltf, url]);
 
   // WebGL Context Loss Handler
   useEffect(() => {
@@ -221,15 +245,19 @@ const MobileMedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
   deviceName
 }) => {
   const [modelError, setModelError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const meshRef = useRef<THREE.Group>(null);
   const { gl, clock } = useThree();
 
-  // Use useGLTF hook at top level (cannot be conditional)
-  const gltf = useGLTF(url);
+  // Use useGLTF hook - must be called unconditionally
+  let gltf = null;
+  if (url && url.trim() !== '') {
+    gltf = useGLTF(url);
+  }
 
   // Auto-rotation for mobile product display
   useFrame((state) => {
-    if (meshRef.current) {
+    if (meshRef.current && !modelError) {
       // Smooth auto-rotation for product display
       meshRef.current.rotation.y = clock.getElapsedTime() * 0.3; // Slow, professional rotation
       
@@ -243,10 +271,18 @@ const MobileMedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
 
   // Handle loading errors with useEffect
   useEffect(() => {
+    if (!url || url.trim() === '') {
+      setModelError(true);
+      setIsLoading(false);
+      return;
+    }
+
     if (!gltf || !gltf.scene) {
       setModelError(true);
+      setIsLoading(false);
     } else {
       setModelError(false);
+      setIsLoading(false);
       
       // Optimize for mobile rendering
       if (gltf.scene) {
@@ -262,7 +298,7 @@ const MobileMedicalDeviceModel: React.FC<MedicalDeviceModelProps> = ({
         });
       }
     }
-  }, [gltf]);
+  }, [gltf, url]);
 
   // WebGL Context Loss Handler
   useEffect(() => {
@@ -478,25 +514,29 @@ interface MedicalDevice3DProps {
 }
 
 const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
-  modelUrl,
-  fallbackImage = '/images/device-placeholder.svg',
-  deviceName,
-  category,
-  rating,
-  scrollProgress = 0
+	modelUrl,
+	fallbackImage = '/images/device-placeholder.svg',
+	deviceName,
+	category,
+	rating,
+	scrollProgress = 0
 }) => {
-  const [scrollData, setScrollData] = useState<ScrollData>({ progress: scrollProgress, velocity: 0, direction: 1 });
-  const [isModelLoaded, setIsModelLoaded] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-  const [webGLSupported, setWebGLSupported] = useState(true);
-  const [browserIsSafari, setBrowserIsSafari] = useState(false);
-  const [contextLost, setContextLost] = useState(false);
-  const lastScrollY = useRef(0);
-  const contextManager = useRef(WebGLContextManager.getInstance());
+	const [scrollData, setScrollData] = useState<ScrollData>({ progress: scrollProgress, velocity: 0, direction: 1 });
+	const [isModelLoaded, setIsModelLoaded] = useState(false);
+	const [isMobile, setIsMobile] = useState(false);
+	const [isMounted, setIsMounted] = useState(false);
+	const [webGLSupported, setWebGLSupported] = useState(true);
+	const [browserIsSafari, setBrowserIsSafari] = useState(false);
+	const [contextLost, setContextLost] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
+	const [modelError, setModelError] = useState(false);
+	const [isClient, setIsClient] = useState(false);
+	const lastScrollY = useRef(0);
+	const contextManager = useRef(WebGLContextManager.getInstance());
 
   // Client-side mounting check
   useEffect(() => {
+    setIsClient(true);
     setIsMounted(true);
     setWebGLSupported(isWebGLAvailable());
     setBrowserIsSafari(isSafari());
@@ -587,8 +627,20 @@ const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
     setIsModelLoaded(false);
   }, []);
 
-  // Show fallback image if WebGL is not supported, context is lost, or while mounting
-  if (!isMounted || !webGLSupported || !modelUrl || contextLost) {
+  // Show loading state while model is loading
+  if (isLoading && !modelError) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-white text-sm">Loading 3D Model...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show fallback image if WebGL is not supported, context is lost, model error, or while mounting
+  if (!isMounted || !webGLSupported || !modelUrl || contextLost || modelError) {
     return (
       <div className="absolute inset-0 flex items-center justify-center">
         <motion.img 
@@ -603,21 +655,52 @@ const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
             scale: { duration: 4, repeat: Infinity, ease: "easeInOut" },
             rotateY: { duration: 0.1 }
           }}
+          onError={(e) => {
+            console.warn('Fallback image failed to load:', fallbackImage);
+            // If even the fallback fails, show a placeholder
+            e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzM0MTU1Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkRldmljZSBJbWFnZTwvdGV4dD48L3N2Zz4=';
+          }}
         />
         {contextLost && (
           <div className="absolute bottom-4 left-4 right-4 text-center">
             <p className="text-white/60 text-xs">WebGL context lost - showing fallback</p>
           </div>
         )}
+        {!modelUrl && (
+          <div className="absolute bottom-4 left-4 right-4 text-center">
+            <p className="text-white/60 text-xs">No model URL provided</p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Prevent hydration mismatch by not rendering until client-side
+  if (!isClient) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-white text-sm">Loading...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="absolute inset-0">
-
-      
-      <Canvas
+      <Suspense fallback={
+        <div className="absolute inset-0 flex items-center justify-center">
+          <motion.div
+            className="text-white text-lg"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            Loading 3D Model...
+          </motion.div>
+        </div>
+      }>
+        <Canvas
         camera={{ 
           position: [0, 0, isMobile ? 2.8 : 4.5],
           fov: isMobile ? 75 : 55,
@@ -704,8 +787,7 @@ const MedicalDevice3D: React.FC<MedicalDevice3DProps> = ({
           
         </Suspense>
       </Canvas>
-      
-
+      </Suspense>
     </div>
   );
 };

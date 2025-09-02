@@ -53,7 +53,7 @@ export default function OligoscanPage() {
 					<div>
 						<div className="h-[600px] relative">
 							<MedicalDevice3D
-								modelUrl={"https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/The%20Oligoscan%201.glb"}
+								modelUrl={"/models/The Oligoscan 1.glb"}
 								fallbackImage="/images/device-placeholder.svg"
 								deviceName="Oligoscan"
 								category="Diagnostic"

@@ -28,7 +28,10 @@ const deviceData = {
     { name: 'Safety Features', value: 'Eye protection & safety interlocks', trigger: 0.7 },
     { name: 'Control System', value: 'Touchscreen interface with preset programs', trigger: 0.85 }
   ],
-  category: 'Laser Therapy'
+  category: 'Laser Therapy',
+  galleryImages: [
+    '/images/theralas-device.webp'
+  ]
 };
 
 export default function TheraLASLaserPage() {

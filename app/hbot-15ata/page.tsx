@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import ProductGallery from '../components/ProductGallery';
+import ClientOnly from '../components/ClientOnly';
 
 const MedicalDevice3D = dynamic(() => import('../components/MedicalDevice3D'), {
 	ssr: false,
@@ -34,8 +36,14 @@ export default function HBOT15ATAPage() {
 	const specs: { name: string; value: string }[] = [
 		{ name: 'Internal Volume', value: '1.4㎥' },
 		{ name: 'Pressure', value: '50kpa (1.5 ATA)' },
-		{ name: 'Dimensions', value: '82” L × 28” W × 51” H' },
+		{ name: 'Dimensions', value: '82" L × 28" W × 51" H' },
 		{ name: 'Features', value: 'Touchscreen interface, remote control, LED lighting, intercom, entertainment system, humidity & temperature monitoring, safety relief valves' }
+	];
+
+	const galleryImages = [
+		'/images/HBOT 1.5ATA/SGRC0740.JPG',
+		'/images/HBOT 1.5ATA/SGRC0743.JPG',
+		'/images/HBOT 1.5ATA/SGRC0744.JPG'
 	];
 
 	return (
@@ -51,14 +59,23 @@ export default function HBOT15ATAPage() {
 				<div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
 					<div>
 						<div className="h-[600px] relative">
-							<MedicalDevice3D
-								modelUrl={"https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/Rollins%20-%20wellness%20-%20/HBOT%201.5ATA%20%282%29.glb"}
-								fallbackImage="/images/device-placeholder.svg"
-								deviceName="HBOT 1.5ATA"
-								category="Hyperbaric Oxygen Therapy"
-								rating={4.8}
-								scrollProgress={scrollProgress}
-							/>
+							<ClientOnly fallback={
+								<div className="w-full h-full bg-[#2a3142] flex items-center justify-center">
+									<div className="text-center">
+										<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+										<p className="text-white text-sm">Loading 3D Model...</p>
+									</div>
+								</div>
+							}>
+								<MedicalDevice3D
+									modelUrl={"/models/HBOT 1.5ATA (2).glb"}
+									fallbackImage="/images/device-placeholder.svg"
+									deviceName="HBOT 1.5ATA"
+									category="Hyperbaric Oxygen Therapy"
+									rating={4.8}
+									scrollProgress={scrollProgress}
+								/>
+							</ClientOnly>
 						</div>
 
 						<div className="mt-8 grid sm:grid-cols-2 gap-4">
@@ -100,6 +117,21 @@ export default function HBOT15ATAPage() {
 					</div>
 				</div>
 			</section>
+
+			{/* Product Gallery Section */}
+			<ClientOnly>
+				<ProductGallery 
+					images={galleryImages} 
+					productName="HBOT 1.5ATA"
+					backgroundTheme={{
+						primary: 'blue-600',
+						secondary: 'blue-500',
+						accent: 'blue-400',
+						gradient: 'from-blue-600 to-blue-800',
+						accentGradient: 'from-blue-400 to-blue-600'
+					}}
+				/>
+			</ClientOnly>
 		</div>
 	);
 } 
