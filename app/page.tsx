@@ -23,7 +23,7 @@ const devices = [
     model: 'SAMBO VENTEC 3 ATA',
     description: 'Hyperbaric Oxygen Therapy (HBOT) is a cutting-edge, safe, simple, and effective therapy that improves the concentration & supply of oxygen in our blood, which in turn supercharges the rate at which our bodies heal. Under pressurized conditions, your lungs can gather much more oxygen than would be possible breathing pure oxygen at normal air pressure.',
     rating: 4.9,
-    modelPath: '/images/f4c77ac8-5524-49b4-9e81-299746ebc08d.glb',
+    modelPath: '/models/hyperbaric-chamber.glb',
     fallbackImage: '/images/device-placeholder.svg',
     benefits: [
       'Improved brain function and metabolism',
@@ -48,7 +48,7 @@ const devices = [
     model: 'BED 3.0',
     description: 'Advanced Red Light Therapy device offering a relaxed but powerful solution towards a healthy, balanced lifestyle. It enhances cellular function through targeted wavelengths, stimulating collagen production and promoting tissue repair. The full-body 360° coverage ensures optimal therapeutic light exposure for maximum benefits.',
     rating: 4.8,
-    modelPath: '/images/1f6493e2-5cc3-4feb-81b6-ceac68867fe1.glb',
+    modelPath: '/models/ubody-collagen.glb',
     fallbackImage: '/images/device-placeholder.svg',
     benefits: [
       'Enhanced collagen production',
@@ -73,7 +73,7 @@ const devices = [
     model: 'PERFORMANCE™',
     description: '°CRYO Arctic Performance is a single person whole-body cryotherapy chamber designed to deliver the safest and most effective Cryo treatments. Built with state-of-the-art technology innovatively engineered to ensure that clients never come into direct contact with nitrogen vapors, only breathable air.',
     rating: 4.9,
-    modelPath: '/images/2a63cebe-5eb0-4618-a1ef-1664be442c11.glb',
+    modelPath: '/models/cryo-arctic.glb',
           fallbackImage: '/images/Cryo%20Chamber%20Lifecube/_DSC5195.JPG',
     benefits: [
       'Enhanced athletic performance',
