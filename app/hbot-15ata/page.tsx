@@ -68,7 +68,7 @@ export default function HBOT15ATAPage() {
 								</div>
 							}>
 								<MedicalDevice3D
-									modelUrl={"/models/HBOT 1.5ATA (2).glb"}
+									modelUrl={"https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/Rollins%20-%20wellness%20-%20/HBOT%201.5ATA%20%282%29.glb"}
 									fallbackImage="/images/device-placeholder.svg"
 									deviceName="HBOT 1.5ATA"
 									category="Hyperbaric Oxygen Therapy"

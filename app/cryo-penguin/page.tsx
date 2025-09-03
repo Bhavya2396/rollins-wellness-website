@@ -10,7 +10,7 @@ const deviceData = {
   model: 'ARCTIC PERFORMANCE',
   description: 'The Cryo Penguin is a state-of-the-art cryotherapy chamber designed for optimal performance and recovery. Using advanced cooling technology, it delivers precise temperature control for maximum therapeutic benefits while ensuring complete safety and comfort.',
   rating: 4.8,
-  modelPath: '/models/Cryo-Penguin.glb',
+  modelPath: 'https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/Rollins%20-%20wellness%20-%20/Cryo%20Arctic%20Whole%20Body%20Cryo%20Therapy.glb',
   fallbackImage: '/images/device-placeholder.svg',
   benefits: [
     'Enhanced athletic performance',

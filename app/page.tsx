@@ -78,7 +78,7 @@ const devices = [
     model: 'PERFORMANCE™',
     description: '°CRYO Arctic Performance is a single person whole-body cryotherapy chamber designed to deliver the safest and most effective Cryo treatments. Built with state-of-the-art technology innovatively engineered to ensure that clients never come into direct contact with nitrogen vapors, only breathable air.',
     rating: 4.9,
-    modelPath: '/models/Cryo-Penguin.glb',
+    modelPath: 'https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/Rollins%20-%20wellness%20-%20/Cryo%20Arctic%20Whole%20Body%20Cryo%20Therapy.glb',
           fallbackImage: '/images/Cryo%20Chamber%20Lifecube/_DSC5195.JPG',
     benefits: [
       'Enhanced athletic performance',
@@ -124,7 +124,7 @@ const devices = [
     model: 'THERAPY SYSTEM',
     description: 'Compact therapy system designed to improve circulation, reduce inflammation, and promote natural healing through safe heat therapy to hands and feet.',
     rating: 4.7,
-    modelPath: '/models/Avacen.glb',
+    modelPath: 'https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/Rollins%20-%20wellness%20-%20/Avacen%201.glb',
     fallbackImage: '/images/device-placeholder.svg',
     benefits: [
       'Reduces pain and inflammation',
@@ -146,7 +146,7 @@ const devices = [
     model: 'HYPERBARIC CHAMBER',
     description: 'Safe, innovative hyperbaric oxygen therapy at 1.5 ATA to increase oxygen concentration in the bloodstream and accelerate natural healing.',
     rating: 4.8,
-    modelPath: '/models/HBOT 1.5ATA (2).glb',
+    modelPath: 'https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/Rollins%20-%20wellness%20-%20/HBOT%201.5ATA%20%282%29.glb',
           fallbackImage: '/images/HBOT%201.5ATA/SGRC0740.JPG',
     benefits: [
       'Improves brain function & metabolism',
@@ -191,7 +191,7 @@ const devices = [
       model: 'LOCALIZED CRYOTHERAPY',
       description: 'The CRYO Penguin is designed to deliver the safest and most effective localized cryotherapy treatments in the industry. With its ergonomic design, pre-programmed protocols and built-in safety features, the device exceeds the highest standards. With pinpoint accuracy and power to handle everything from body appearance to relaxation after sport activity, the °CRYO Penguin™ is the most flexible cryotherapy machine on the market.',
       rating: 4.8,
-      modelPath: '/models/Cryo-Penguin.glb',
+      modelPath: 'https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/Rollins%20-%20wellness%20-%20/Cryo%20Arctic%20Whole%20Body%20Cryo%20Therapy.glb',
       fallbackImage: '/images/Cryo%20Penguin%20/SGRC0681.JPG',
       benefits: [
         'Smart touch screen interface',

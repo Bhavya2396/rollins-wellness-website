@@ -53,7 +53,7 @@ export default function AvacenPage() {
 					<div>
 						<div className="h-[600px] relative">
 							<MedicalDevice3D
-								modelUrl={"/models/Avacen.glb"}
+								modelUrl={"https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/Rollins%20-%20wellness%20-%20/Avacen%201.glb"}
 								fallbackImage="/images/device-placeholder.svg"
 								deviceName="Avacen"
 								category="Therapy System"

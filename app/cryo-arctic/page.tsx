@@ -11,7 +11,7 @@ const deviceData = {
   model: 'PERFORMANCE™',
   description: 'CRYO Arctic Performance is a single person whole-body cryotherapy chamber designed to deliver the safest and most effective Cryo treatments. Built with state-of-the-art technology innovatively engineered to ensure that clients never come into direct contact with nitrogen vapors, only breathable air.',
   rating: 4.9,
-  modelPath: '/models/Cryo-Penguin.glb',
+  modelPath: 'https://gbt3sbuqldp6frke.public.blob.vercel-storage.com/Rollins%20-%20wellness%20-%20/Cryo%20Arctic%20Whole%20Body%20Cryo%20Therapy.glb',
   fallbackImage: '/images/device-placeholder.svg',
   benefits: [
     'Enhanced athletic performance',
